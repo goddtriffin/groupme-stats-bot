@@ -1,6 +1,7 @@
 package groupmestatsbot
 
 import (
+	"fmt"
 	"strings"
 
 	"github.com/MagnusFrater/groupme"
@@ -8,15 +9,17 @@ import (
 
 // Stats contains a GroupMe group's statistics.
 type Stats struct {
-	Messages           []groupme.Message
-	Members            map[string]*Member
-	WordFrequency      map[string]*Word
-	CharacterFrequency map[rune]*Character
+	Messages            []groupme.Message
+	Members             map[string]*Member
+	WordFrequency       map[string]*Word
+	CharacterFrequency  map[rune]*Character
+	TotalMessagesLength int // the length of all messages combined together
 }
 
 // NewStats creates a new Stats.
 func NewStats(messages []groupme.Message) Stats {
 	return Stats{
+		Messages:           messages,
 		Members:            make(map[string]*Member),
 		CharacterFrequency: make(map[rune]*Character),
 		WordFrequency:      make(map[string]*Word),
@@ -39,6 +42,9 @@ func (s *Stats) Analyze() {
 			}
 		}
 
+		// parse message length
+		s.TotalMessagesLength += len(message.Text)
+
 		// parse word frequency
 		for _, text := range strings.Fields(message.Text) {
 			s.incWord(text)
@@ -50,4 +56,14 @@ func (s *Stats) Analyze() {
 			}
 		}
 	}
+}
+
+// AverageMessageLength returns the average message length.
+func (s *Stats) AverageMessageLength() int {
+	return s.TotalMessagesLength / len(s.Messages)
+}
+
+// SprintAverageMessageLength formats an Average Message Length Bot post and returns the resulting string.
+func (s *Stats) SprintAverageMessageLength() string {
+	return fmt.Sprintf("Average Message Length: %d words", s.AverageMessageLength())
 }

@@ -1,3 +1,3 @@
 # GroupMe Stats Bot
 
-GroupMe Bot that parses statistics about a group.
+GroupMe Bot that analyzes statistics about a group.
