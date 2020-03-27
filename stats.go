@@ -30,13 +30,13 @@ func (s *Stats) Analyze() {
 	for _, message := range s.Messages {
 		// parse numMessage and popularity
 		s.incNumMessages(message.UserID, message.Name)
-		s.incPopularity(message.UserID, message.Name, len(message.FavoritedBy))
 
 		// parse narcissists and simps
 		for _, userID := range message.FavoritedBy {
 			if userID == message.UserID {
 				s.incNarcissist(message.UserID, message.Name)
 			} else {
+				s.incPopularity(message.UserID, message.Name)
 				s.incSimp(userID, "")
 			}
 		}

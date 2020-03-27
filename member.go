@@ -15,6 +15,15 @@ type Member struct {
 	NumMessages     int // how many messages did they send
 }
 
+// Charisma returns the quality of their overall messages.
+func (m *Member) Charisma() float64 {
+	if m.NumMessages < 1 || m.PopularityScore < 1 {
+		return -1
+	}
+
+	return float64(m.PopularityScore) / float64(m.NumMessages)
+}
+
 func (s *Stats) addMember(userID, name string) {
 	if m, ok := s.Members[userID]; !ok {
 		s.Members[userID] = &Member{
@@ -34,10 +43,10 @@ func (s *Stats) incNumMessages(userID, name string) {
 	s.Members[userID].NumMessages++
 }
 
-func (s *Stats) incPopularity(userID, name string, inc int) {
+func (s *Stats) incPopularity(userID, name string) {
 	s.addMember(userID, name)
 
-	s.Members[userID].PopularityScore += inc
+	s.Members[userID].PopularityScore++
 }
 
 func (s *Stats) incSimp(userID, name string) {
@@ -127,6 +136,25 @@ func (s *Stats) TopPosters(limit int) []*Member {
 	return top
 }
 
+// MostCharismatic returns a sorted list of who posts the highest quality messages.
+// Charisma is defined as # of likes / # of messages.
+func (s *Stats) MostCharismatic(limit int) []*Member {
+	sorted := []*Member{}
+
+	for _, member := range s.Members {
+		sorted = append(sorted, member)
+	}
+
+	sort.Slice(sorted, func(i, j int) bool { return sorted[i].Charisma() > sorted[j].Charisma() })
+
+	top := []*Member{}
+	for i := 0; i < limit && i < len(sorted); i++ {
+		top = append(top, sorted[i])
+	}
+
+	return top
+}
+
 // SprintTopOfThePops formats a Top of the Pops Bot post and returns the resulting string.
 func (s *Stats) SprintTopOfThePops(limit int) string {
 	str := "Top of the Pops\n(who has the most upvotes)\n==========\n"
@@ -188,6 +216,23 @@ func (s *Stats) SprintTopPoster(limit int) string {
 
 		// don't put newline after last ranking
 		if i < len(topPosters)-1 {
+			str += "\n"
+		}
+	}
+
+	return str
+}
+
+// SprintMostCharismatic formats a Most Charismatic Bot post and returns the resulting string.
+func (s *Stats) SprintMostCharismatic(limit int) string {
+	str := "Most Charismatic\n(# of likes / # of messages)\n==========\n"
+
+	mostCharismatic := s.MostCharismatic(limit)
+	for i, member := range mostCharismatic {
+		str += fmt.Sprintf("%d) %s: %f", i+1, member.Name, member.Charisma())
+
+		// don't put newline after last ranking
+		if i < len(mostCharismatic)-1 {
 			str += "\n"
 		}
 	}
