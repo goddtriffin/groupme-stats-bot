@@ -22,6 +22,7 @@ func main() {
 	topOfTheNarcissists := flag.Bool("topOfTheNarcissists", false, "toggle for TopOfTheNarcissists")
 	topPoster := flag.Bool("topPoster", false, "toggle for TopPoster")
 	mostCharismatic := flag.Bool("mostCharismatic", false, "toggle for MostCharismatic")
+	topLurker := flag.Bool("topLurker", false, "toggle for TopLurker")
 	textFrequencyAnalysis := flag.Bool("textFrequencyAnalysis", false, "toggle for TextFrequencyAnalysis")
 	topMessages := flag.Bool("topMessages", false, "toggle for TopMessages")
 
@@ -33,10 +34,12 @@ func main() {
 	}
 
 	if !*topOfThePops && !*topOfTheSimps && !*topOfTheNarcissists &&
-		!*topPoster && !*mostCharismatic && !*textFrequencyAnalysis && !*topMessages {
+		!*topPoster && !*mostCharismatic && !*topLurker &&
+		!*textFrequencyAnalysis && !*topMessages {
 		fmt.Print("Must toggle at least one of: ")
 		fmt.Print("topOfThePops, topOfTheSimps, topOfTheNarcissists, ")
-		fmt.Println("topPoster, mostCharismatic, textFrequencyAnalysis, topMessages")
+		fmt.Print("topPoster, mostCharismatic, topLurker, ")
+		fmt.Println("textFrequencyAnalysis, topMessages")
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -80,6 +83,20 @@ func main() {
 		}
 	}
 
+	if *mostCharismatic {
+		err = bot.Post(stats.SprintMostCharismatic(*limit), nil)
+		if err != nil {
+			log.Panic(err)
+		}
+	}
+
+	if *topLurker {
+		err = bot.Post(stats.SprintTopLurker(*limit), nil)
+		if err != nil {
+			log.Panic(err)
+		}
+	}
+
 	if *textFrequencyAnalysis {
 		err = bot.Post(stats.SprintTextFrequencyAnalysis(*limit), nil)
 		if err != nil {
@@ -94,15 +111,6 @@ func main() {
 				log.Panic(err)
 			}
 		}
-	}
-
-	if *mostCharismatic {
-		// err = bot.Post(stats.SprintMostCharismatic(*limit), nil)
-		// if err != nil {
-		// 	log.Panic(err)
-		// }
-
-		fmt.Print(stats.SprintMostCharismatic(*limit))
 	}
 }
 

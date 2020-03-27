@@ -17,11 +17,20 @@ type Member struct {
 
 // Charisma returns the quality of their overall messages.
 func (m *Member) Charisma() float64 {
-	if m.NumMessages < 1 || m.PopularityScore < 1 {
+	if m.PopularityScore < 1 || m.NumMessages < 1 {
 		return -1
 	}
 
 	return float64(m.PopularityScore) / float64(m.NumMessages)
+}
+
+// Lurky returns a ratio between their interactions with others' messages and how often they post messages themselves.
+func (m *Member) Lurky() float64 {
+	if m.SimpScore < 1 || m.NumMessages < 1 {
+		return -1
+	}
+
+	return float64(m.SimpScore) / float64(m.NumMessages)
 }
 
 func (s *Stats) addMember(userID, name string) {
@@ -155,6 +164,25 @@ func (s *Stats) MostCharismatic(limit int) []*Member {
 	return top
 }
 
+// TopLurker returns a sorted list of who lurks the most.
+// A lurker is defined as # of likes given out / # of messages posted.
+func (s *Stats) TopLurker(limit int) []*Member {
+	sorted := []*Member{}
+
+	for _, member := range s.Members {
+		sorted = append(sorted, member)
+	}
+
+	sort.Slice(sorted, func(i, j int) bool { return sorted[i].Lurky() > sorted[j].Lurky() })
+
+	top := []*Member{}
+	for i := 0; i < limit && i < len(sorted); i++ {
+		top = append(top, sorted[i])
+	}
+
+	return top
+}
+
 // SprintTopOfThePops formats a Top of the Pops Bot post and returns the resulting string.
 func (s *Stats) SprintTopOfThePops(limit int) string {
 	str := "Top of the Pops\n(who has the most upvotes)\n==========\n"
@@ -229,10 +257,27 @@ func (s *Stats) SprintMostCharismatic(limit int) string {
 
 	mostCharismatic := s.MostCharismatic(limit)
 	for i, member := range mostCharismatic {
-		str += fmt.Sprintf("%d) %s: %f", i+1, member.Name, member.Charisma())
+		str += fmt.Sprintf("%d) %s: %.3f", i+1, member.Name, member.Charisma())
 
 		// don't put newline after last ranking
 		if i < len(mostCharismatic)-1 {
+			str += "\n"
+		}
+	}
+
+	return str
+}
+
+// SprintTopLurker formats a Top Lurker Bot post and returns the resulting string.
+func (s *Stats) SprintTopLurker(limit int) string {
+	str := "Top Lurker\n(# of likes given / # of messages)\n==========\n"
+
+	topLurker := s.TopLurker(limit)
+	for i, member := range topLurker {
+		str += fmt.Sprintf("%d) %s: %.3f", i+1, member.Name, member.Lurky())
+
+		// don't put newline after last ranking
+		if i < len(topLurker)-1 {
 			str += "\n"
 		}
 	}
