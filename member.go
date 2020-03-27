@@ -7,12 +7,13 @@ import (
 
 // Member is a container for a GroupMe member's staistics.
 type Member struct {
-	ID              string
-	Name            string
-	PopularityScore int // how often did others upvote them
-	SimpScore       int // how many times did they upvote someone else
-	NarcissistScore int // how many times did they upvote themselves
-	NumMessages     int // how many messages did they send
+	ID                string
+	Name              string
+	PopularityScore   int // how often did others upvote them
+	UnpopularityScore int // how often did their messages get zero favorites
+	SimpScore         int // how many times did they upvote someone else
+	NarcissistScore   int // how many times did they upvote themselves
+	NumMessages       int // how many messages did they send
 }
 
 // Charisma returns the quality of their overall messages.
@@ -56,6 +57,12 @@ func (s *Stats) incPopularity(userID, name string) {
 	s.addMember(userID, name)
 
 	s.Members[userID].PopularityScore++
+}
+
+func (s *Stats) incUnpopularity(userID, name string) {
+	s.addMember(userID, name)
+
+	s.Members[userID].UnpopularityScore++
 }
 
 func (s *Stats) incSimp(userID, name string) {
@@ -183,6 +190,24 @@ func (s *Stats) TopLurker(limit int) []*Member {
 	return top
 }
 
+// TopRambler returns a sorted list of who has the most messages with zero favorites.
+func (s *Stats) TopRambler(limit int) []*Member {
+	sorted := []*Member{}
+
+	for _, member := range s.Members {
+		sorted = append(sorted, member)
+	}
+
+	sort.Slice(sorted, func(i, j int) bool { return sorted[i].UnpopularityScore > sorted[j].UnpopularityScore })
+
+	top := []*Member{}
+	for i := 0; i < limit && i < len(sorted); i++ {
+		top = append(top, sorted[i])
+	}
+
+	return top
+}
+
 // SprintTopOfThePops formats a Top of the Pops Bot post and returns the resulting string.
 func (s *Stats) SprintTopOfThePops(limit int) string {
 	str := "Top of the Pops\n(who has the most upvotes)\n==========\n"
@@ -278,6 +303,23 @@ func (s *Stats) SprintTopLurker(limit int) string {
 
 		// don't put newline after last ranking
 		if i < len(topLurker)-1 {
+			str += "\n"
+		}
+	}
+
+	return str
+}
+
+// SprintTopRambler formats a Top Rambler Bot post and returns the resulting string.
+func (s *Stats) SprintTopRambler(limit int) string {
+	str := "Top Rambler\n(most messages with zero likes)\n==========\n"
+
+	topRambler := s.TopRambler(limit)
+	for i, member := range topRambler {
+		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.UnpopularityScore)
+
+		// don't put newline after last ranking
+		if i < len(topRambler)-1 {
 			str += "\n"
 		}
 	}
