@@ -1,7 +1,6 @@
 package groupmestatsbot
 
 import (
-	"fmt"
 	"strings"
 
 	"github.com/MagnusFrater/groupme"
@@ -56,14 +55,4 @@ func (s *Stats) Analyze() {
 			}
 		}
 	}
-}
-
-// AverageMessageLength returns the average message length.
-func (s *Stats) AverageMessageLength() int {
-	return s.TotalMessagesLength / len(s.Messages)
-}
-
-// SprintAverageMessageLength formats an Average Message Length Bot post and returns the resulting string.
-func (s *Stats) SprintAverageMessageLength() string {
-	return fmt.Sprintf("Average Message Length: %d words", s.AverageMessageLength())
 }
