@@ -30,15 +30,20 @@ func (s *Stats) Analyze() {
 	for _, message := range s.Messages {
 		// parse numMessage and popularity
 		s.incNumMessages(message.UserID, message.Name)
-		s.incPopularity(message.UserID, message.Name, len(message.FavoritedBy))
 
-		// parse narcissists and simps
-		for _, userID := range message.FavoritedBy {
-			if userID == message.UserID {
-				s.incNarcissist(message.UserID, message.Name)
-			} else {
-				s.incSimp(userID, "")
+		if len(message.FavoritedBy) > 0 {
+			// parse narcissists and simps
+			for _, userID := range message.FavoritedBy {
+				if userID == message.UserID {
+					s.incNarcissist(message.UserID, message.Name)
+				} else {
+					s.incPopularity(message.UserID, message.Name)
+					s.incSimp(userID, "")
+				}
 			}
+		} else {
+			// unpopularity - their message received zero favorites
+			s.incUnpopularity(message.UserID, message.Name)
 		}
 
 		// parse message length
