@@ -17,6 +17,8 @@ func main() {
 	groupID := flag.String("groupID", "", "GroupMe Group ID")
 	limit := flag.Int("limit", 5, "number of items to list")
 
+	blacklist := flag.String("blacklist", "", "blacklist of comma-delimited User IDs")
+
 	topOfThePops := flag.Bool("topOfThePops", false, "toggle for TopOfThePops")
 	topOfTheSimps := flag.Bool("topOfTheSimps", false, "toggle for TopOfTheSimps")
 	topOfTheNarcissists := flag.Bool("topOfTheNarcissists", false, "toggle for TopOfTheNarcissists")
@@ -26,6 +28,7 @@ func main() {
 	topRambler := flag.Bool("topRambler", false, "toggle for TopRambler")
 	textFrequencyAnalysis := flag.Bool("textFrequencyAnalysis", false, "toggle for TextFrequencyAnalysis")
 	topMessages := flag.Bool("topMessages", false, "toggle for TopMessages")
+	topReposts := flag.Bool("topReposts", false, "toggle for TopReposts")
 
 	flag.Parse()
 
@@ -34,13 +37,14 @@ func main() {
 		os.Exit(1)
 	}
 
-	if !*topOfThePops && !*topOfTheSimps && !*topOfTheNarcissists &&
-		!*topPoster && !*mostCharismatic && !*topLurker &&
-		!*topRambler && !*textFrequencyAnalysis && !*topMessages {
+	if !*topOfThePops && !*topOfTheSimps && !*topOfTheNarcissists && !*topPoster &&
+		!*mostCharismatic && !*topLurker && !*topRambler && !*textFrequencyAnalysis &&
+		!*topMessages && !*topReposts {
 		fmt.Print("Must toggle at least one of: ")
-		fmt.Print("topOfThePops, topOfTheSimps, topOfTheNarcissists, ")
-		fmt.Print("topPoster, mostCharismatic, topLurker, ")
-		fmt.Println("topRambler, textFrequencyAnalysis, topMessages")
+		fmt.Print("topOfThePops, topOfTheSimps, topOfTheNarcissists, topPoster, ")
+		fmt.Print("mostCharismatic, topLurker, topRambler, textFrequencyAnalysis, ")
+		fmt.Println("topMessages, topReposts")
+
 		flag.Usage()
 		os.Exit(1)
 	}
@@ -54,6 +58,14 @@ func main() {
 	}
 
 	stats := groupmestatsbot.NewStats(messages)
+
+	// blacklist Bot User ID if it exists
+	if *blacklist != "" {
+		for _, userID := range strings.Split(*blacklist, ",") {
+			stats.Blacklist(userID)
+		}
+	}
+
 	stats.Analyze()
 
 	if *topOfThePops {
@@ -113,34 +125,16 @@ func main() {
 	}
 
 	if *topMessages {
-		for _, part := range botBufferedMessage(stats.SprintTopMessages(*limit), "\n\n") {
-			err = bot.Post(part, nil)
-			if err != nil {
-				log.Panic(err)
-			}
-		}
-	}
-}
-
-// botBufferedMessage returns a list of strings no bigger than
-// what is allowed to be sent as a GroupMe Bot (length: 1000)
-func botBufferedMessage(s, sep string) []string {
-	list := []string{}
-	var strBuilder string
-
-	split := strings.Split(s, sep)
-	for _, part := range split {
-		if len(strBuilder)+len(part)+len(sep) <= 1000 {
-			strBuilder += part + sep
-		} else {
-			list = append(list, strings.TrimSpace(strBuilder))
-			strBuilder = part + sep
+		err = bot.Post(stats.SprintTopMessages(*limit), nil)
+		if err != nil {
+			log.Panic(err)
 		}
 	}
 
-	if len(strBuilder) > 0 {
-		list = append(list, strings.TrimSpace(strBuilder))
+	if *topReposts {
+		err = bot.Post(stats.SprintTopReposts(*limit), nil)
+		if err != nil {
+			log.Panic(err)
+		}
 	}
-
-	return list
 }

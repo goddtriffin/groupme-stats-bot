@@ -210,7 +210,7 @@ func (s *Stats) TopRambler(limit int) []*Member {
 
 // SprintTopOfThePops formats a Top of the Pops Bot post and returns the resulting string.
 func (s *Stats) SprintTopOfThePops(limit int) string {
-	str := "Top of the Pops\n(who has the most upvotes)\n==========\n"
+	str := fmt.Sprintf("Top of the Pops\n(who has the most upvotes)\n%s\n", messageDivider)
 
 	topPopulars := s.TopOfThePops(limit)
 	for i, member := range topPopulars {
@@ -227,7 +227,7 @@ func (s *Stats) SprintTopOfThePops(limit int) string {
 
 // SprintTopOfTheSimps formats a Top of the Simps Bot post and returns the resulting string.
 func (s *Stats) SprintTopOfTheSimps(limit int) string {
-	str := "Top of the Simps\n(who upvoted other people the most)\n==========\n"
+	str := fmt.Sprintf("Top of the Simps\n(who upvoted other people the most)\n%s\n", messageDivider)
 
 	topSimps := s.TopOfTheSimps(limit)
 	for i, member := range topSimps {
@@ -244,7 +244,7 @@ func (s *Stats) SprintTopOfTheSimps(limit int) string {
 
 // SprintTopOfTheNarcissists formats a Top of the Narcissists Bot post and returns the resulting string.
 func (s *Stats) SprintTopOfTheNarcissists(limit int) string {
-	str := "Top of the Narcissists\n(who upvoted themselves the most)\n==========\n"
+	str := fmt.Sprintf("Top of the Narcissists\n(who upvoted themselves the most)\n%s\n", messageDivider)
 
 	topNarcissists := s.TopOfTheNarcissists(limit)
 	for i, member := range topNarcissists {
@@ -261,7 +261,7 @@ func (s *Stats) SprintTopOfTheNarcissists(limit int) string {
 
 // SprintTopPoster formats a Top Poster Bot post and returns the resulting string.
 func (s *Stats) SprintTopPoster(limit int) string {
-	str := "Top Poster\n(who posted the most)\n==========\n"
+	str := fmt.Sprintf("Top Poster\n(who posted the most)\n%s\n", messageDivider)
 
 	topPosters := s.TopPosters(limit)
 	for i, member := range topPosters {
@@ -278,7 +278,7 @@ func (s *Stats) SprintTopPoster(limit int) string {
 
 // SprintMostCharismatic formats a Most Charismatic Bot post and returns the resulting string.
 func (s *Stats) SprintMostCharismatic(limit int) string {
-	str := "Most Charismatic\n(# of likes / # of messages)\n==========\n"
+	str := fmt.Sprintf("Most Charismatic\n(# of likes / # of messages)\n%s\n", messageDivider)
 
 	mostCharismatic := s.MostCharismatic(limit)
 	for i, member := range mostCharismatic {
@@ -295,7 +295,7 @@ func (s *Stats) SprintMostCharismatic(limit int) string {
 
 // SprintTopLurker formats a Top Lurker Bot post and returns the resulting string.
 func (s *Stats) SprintTopLurker(limit int) string {
-	str := "Top Lurker\n(# of likes given / # of messages)\n==========\n"
+	str := fmt.Sprintf("Top Lurker\n(# of likes given / # of messages)\n%s\n", messageDivider)
 
 	topLurker := s.TopLurker(limit)
 	for i, member := range topLurker {
@@ -312,7 +312,7 @@ func (s *Stats) SprintTopLurker(limit int) string {
 
 // SprintTopRambler formats a Top Rambler Bot post and returns the resulting string.
 func (s *Stats) SprintTopRambler(limit int) string {
-	str := "Top Rambler\n(most messages with zero likes)\n==========\n"
+	str := fmt.Sprintf("Top Rambler\n(most messages with zero likes)\n%s\n", messageDivider)
 
 	topRambler := s.TopRambler(limit)
 	for i, member := range topRambler {

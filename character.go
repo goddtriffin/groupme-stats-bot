@@ -43,7 +43,7 @@ func (s *Stats) TopCharacters(limit int) []*Character {
 
 // SprintTopCharacters formats a Top Characters Bot post and returns the resulting string.
 func (s *Stats) SprintTopCharacters(limit int) string {
-	str := "Top Characters\n==========\n"
+	str := fmt.Sprintf("Top Characters\n%s\n", messageDivider)
 
 	topCharacters := s.TopCharacters(limit)
 	for i, c := range topCharacters {

@@ -4,3 +4,7 @@ github.com/MagnusFrater/groupme v0.2.2 h1:NddksOuGjbf4kxqG6q/MH0Y8BTd5HJa83M6g6e
 github.com/MagnusFrater/groupme v0.2.2/go.mod h1:RQEd22RRmBeTHFBBQBRNs1L3rAi8rNsD6WHJPPoKuMQ=
 github.com/MagnusFrater/groupme v0.3.0 h1:8AGXrLOEwTaOrOh2IpRtN3kFB7I5UM7Wu0tnmyp9gp8=
 github.com/MagnusFrater/groupme v0.3.0/go.mod h1:RQEd22RRmBeTHFBBQBRNs1L3rAi8rNsD6WHJPPoKuMQ=
+github.com/MagnusFrater/groupme v0.4.0 h1:8krFy8gR6bb5vwBelSgk5Ucz96Sjf2bDM2gEcwpnhPQ=
+github.com/MagnusFrater/groupme v0.4.0/go.mod h1:RQEd22RRmBeTHFBBQBRNs1L3rAi8rNsD6WHJPPoKuMQ=
+github.com/MagnusFrater/groupme v0.5.0 h1:vi0+5uLGuunimM18b/SUyWMq9fDOTpvMpzdbsq9sAEE=
+github.com/MagnusFrater/groupme v0.5.0/go.mod h1:RQEd22RRmBeTHFBBQBRNs1L3rAi8rNsD6WHJPPoKuMQ=
