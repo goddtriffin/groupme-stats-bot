@@ -43,7 +43,7 @@ func (s *Stats) TopWords(limit int) []*Word {
 
 // SprintTopWords formats a Top Words Bot post and returns the resulting string.
 func (s *Stats) SprintTopWords(limit int) string {
-	str := "Top Words\n==========\n"
+	str := fmt.Sprintf("Top Words\n%s\n", messageDivider)
 
 	topWords := s.TopWords(limit)
 	for i, w := range topWords {
