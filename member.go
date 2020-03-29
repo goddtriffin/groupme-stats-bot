@@ -15,6 +15,7 @@ type Member struct {
 	SimpScore         int // how many times did they favorite someone else
 	NarcissistScore   int // how many times did they favorite themselves
 	VisionaryScore    int // how many images did they send
+	WordsmithScore    int // how many text-only messages did they send
 
 	NumMessages int // how many messages did they send
 }
@@ -84,6 +85,12 @@ func (s *Stats) incVisionary(userID, name string) {
 	s.addMember(userID, name)
 
 	s.Members[userID].VisionaryScore++
+}
+
+func (s *Stats) incWordsmith(userID, name string) {
+	s.addMember(userID, name)
+
+	s.Members[userID].WordsmithScore++
 }
 
 // TopOfThePops returns a sorted list of the most popular members.
@@ -258,6 +265,28 @@ func (s *Stats) MostVisionary(limit int) []*Member {
 	}
 
 	sort.Slice(sorted, func(i, j int) bool { return sorted[i].VisionaryScore > sorted[j].VisionaryScore })
+
+	top := []*Member{}
+	for i := 0; i < limit && i < len(sorted); i++ {
+		top = append(top, sorted[i])
+	}
+
+	return top
+}
+
+// TopWordsmith returns a sorted list of who posted the most text-only messages.
+func (s *Stats) TopWordsmith(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
+	sorted := []*Member{}
+
+	for _, member := range s.Members {
+		sorted = append(sorted, member)
+	}
+
+	sort.Slice(sorted, func(i, j int) bool { return sorted[i].WordsmithScore > sorted[j].WordsmithScore })
 
 	top := []*Member{}
 	for i := 0; i < limit && i < len(sorted); i++ {

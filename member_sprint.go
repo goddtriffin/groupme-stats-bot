@@ -219,3 +219,30 @@ func (s *Stats) SprintMostVisionary(limit int) string {
 
 	return str
 }
+
+// SprintTopWordsmith formats a Top Wordsmith Bot post and returns the resulting string.
+func (s *Stats) SprintTopWordsmith(limit int) string {
+	str := fmt.Sprintf("Top Wordsmith\n(who posted the most text-only messages)\n%s\n", messageDivider)
+
+	topWordsmith := s.TopWordsmith(limit)
+	if len(topWordsmith) == 0 {
+		str += "\nThere are no members."
+		return str
+	}
+
+	for i, member := range topWordsmith {
+		if member.WordsmithScore == 0 {
+			str += "\nEveryone else posted messages with no text (aka messages with attachments)."
+			break
+		}
+
+		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.WordsmithScore)
+
+		// don't put newline after last ranking
+		if i < len(topWordsmith)-1 {
+			str += "\n"
+		}
+	}
+
+	return str
+}

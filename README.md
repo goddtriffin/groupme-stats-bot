@@ -18,6 +18,7 @@ Analyze statistics about a GroupMe group.
 | Top Lurker              | who lurks the most (`# of favorites given out / # of messages they posted`)         |
 | Top Rambler             | who has most messages that have zero favorites                                      |
 | Most Visionary          | who posts the most images                                                           |
+| Top Wordsmith           | who posts the most text-only messages                                               |
 | Top Messages            | the most favorited messages                                                         |
 | Top Reposts             | the most duplicated messages                                                        |
 | Text Frequency Analysis | total message count, average message length, most used words, most used characters  |

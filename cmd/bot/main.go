@@ -19,17 +19,18 @@ func main() {
 
 	blacklist := flag.String("blacklist", "", "blacklist of comma-delimited User IDs")
 
-	topOfThePops := flag.Bool("topOfThePops", false, "toggle for TopOfThePops")
-	topOfTheSimps := flag.Bool("topOfTheSimps", false, "toggle for TopOfTheSimps")
-	topOfTheNarcissists := flag.Bool("topOfTheNarcissists", false, "toggle for TopOfTheNarcissists")
-	topPoster := flag.Bool("topPoster", false, "toggle for TopPoster")
-	mostCharismatic := flag.Bool("mostCharismatic", false, "toggle for MostCharismatic")
-	topLurker := flag.Bool("topLurker", false, "toggle for TopLurker")
-	topRambler := flag.Bool("topRambler", false, "toggle for TopRambler")
-	mostVisionary := flag.Bool("mostVisionary", false, "toggle for MostVisionary")
-	textFrequencyAnalysis := flag.Bool("textFrequencyAnalysis", false, "toggle for TextFrequencyAnalysis")
-	topMessages := flag.Bool("topMessages", false, "toggle for TopMessages")
-	topReposts := flag.Bool("topReposts", false, "toggle for TopReposts")
+	topOfThePops := flag.Bool("topOfThePops", false, "toggle for Top of the Pops")
+	topOfTheSimps := flag.Bool("topOfTheSimps", false, "toggle for Top of the Simps")
+	topOfTheNarcissists := flag.Bool("topOfTheNarcissists", false, "toggle for Top of the Narcissists")
+	topPoster := flag.Bool("topPoster", false, "toggle for Top Poster")
+	mostCharismatic := flag.Bool("mostCharismatic", false, "toggle for Most Charismatic")
+	topLurker := flag.Bool("topLurker", false, "toggle for Top Lurker")
+	topRambler := flag.Bool("topRambler", false, "toggle for Top Rambler")
+	mostVisionary := flag.Bool("mostVisionary", false, "toggle for Most Visionary")
+	topWordsmith := flag.Bool("topWordsmith", false, "toggle for Top Wordsmith")
+	textFrequencyAnalysis := flag.Bool("textFrequencyAnalysis", false, "toggle for Text Frequency Analysis")
+	topMessages := flag.Bool("topMessages", false, "toggle for Top Messages")
+	topReposts := flag.Bool("topReposts", false, "toggle for Top Reposts")
 
 	flag.Parse()
 
@@ -40,11 +41,12 @@ func main() {
 
 	if !*topOfThePops && !*topOfTheSimps && !*topOfTheNarcissists && !*topPoster &&
 		!*mostCharismatic && !*topLurker && !*topRambler && !*mostVisionary &&
-		!*textFrequencyAnalysis && !*topMessages && !*topReposts {
+		!*topWordsmith && !*textFrequencyAnalysis && !*topMessages && !*topReposts {
 		fmt.Print("Must toggle at least one of: ")
 		fmt.Print("topOfThePops, topOfTheSimps, topOfTheNarcissists, topPoster, ")
 		fmt.Print("mostCharismatic, topLurker, topRambler, mostVisionary, ")
-		fmt.Println("textFrequencyAnalysis, topMessages, topReposts")
+		fmt.Println("topWordsmith, textFrequencyAnalysis, topMessages, topReposts")
+		fmt.Println()
 
 		flag.Usage()
 		os.Exit(1)
@@ -120,6 +122,13 @@ func main() {
 
 	if *mostVisionary {
 		err = bot.Post(stats.SprintMostVisionary(*limit), nil)
+		if err != nil {
+			log.Panic(err)
+		}
+	}
+
+	if *topWordsmith {
+		err = bot.Post(stats.SprintTopWordsmith(*limit), nil)
 		if err != nil {
 			log.Panic(err)
 		}
