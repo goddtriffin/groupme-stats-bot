@@ -31,7 +31,7 @@ func (s *Stats) SprintTopMessages(limit int) string {
 					str += fmt.Sprintf("image: %s", attachment.URL)
 				}
 
-				// online put newline if there are more attachments, or if there is message text
+				// only put newline if there are more attachments, or if the message has text
 				if i < len(message.Attachments)-1 || message.Text != "" {
 					str += "\n"
 				}

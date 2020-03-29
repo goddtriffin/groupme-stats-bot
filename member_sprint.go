@@ -6,7 +6,7 @@ import (
 
 // SprintTopOfThePops formats a Top of the Pops Bot post and returns the resulting string.
 func (s *Stats) SprintTopOfThePops(limit int) string {
-	str := fmt.Sprintf("Top of the Pops\n(who has the most upvotes)\n%s\n", messageDivider)
+	str := fmt.Sprintf("Top of the Pops\n(who has the most favorites)\n%s\n", messageDivider)
 
 	topPopulars := s.TopOfThePops(limit)
 	for i, member := range topPopulars {
@@ -23,7 +23,7 @@ func (s *Stats) SprintTopOfThePops(limit int) string {
 
 // SprintTopOfTheSimps formats a Top of the Simps Bot post and returns the resulting string.
 func (s *Stats) SprintTopOfTheSimps(limit int) string {
-	str := fmt.Sprintf("Top of the Simps\n(who upvoted other people the most)\n%s\n", messageDivider)
+	str := fmt.Sprintf("Top of the Simps\n(who favorited other people's messages the most)\n%s\n", messageDivider)
 
 	topSimps := s.TopOfTheSimps(limit)
 	for i, member := range topSimps {
@@ -40,7 +40,7 @@ func (s *Stats) SprintTopOfTheSimps(limit int) string {
 
 // SprintTopOfTheNarcissists formats a Top of the Narcissists Bot post and returns the resulting string.
 func (s *Stats) SprintTopOfTheNarcissists(limit int) string {
-	str := fmt.Sprintf("Top of the Narcissists\n(who upvoted themselves the most)\n%s\n", messageDivider)
+	str := fmt.Sprintf("Top of the Narcissists\n(who favorited their own messages the most)\n%s\n", messageDivider)
 
 	topNarcissists := s.TopOfTheNarcissists(limit)
 	for i, member := range topNarcissists {
@@ -57,7 +57,7 @@ func (s *Stats) SprintTopOfTheNarcissists(limit int) string {
 
 // SprintTopPoster formats a Top Poster Bot post and returns the resulting string.
 func (s *Stats) SprintTopPoster(limit int) string {
-	str := fmt.Sprintf("Top Poster\n(who posted the most)\n%s\n", messageDivider)
+	str := fmt.Sprintf("Top Poster\n(who posted the most messages)\n%s\n", messageDivider)
 
 	topPosters := s.TopPosters(limit)
 	for i, member := range topPosters {
@@ -74,7 +74,7 @@ func (s *Stats) SprintTopPoster(limit int) string {
 
 // SprintMostCharismatic formats a Most Charismatic Bot post and returns the resulting string.
 func (s *Stats) SprintMostCharismatic(limit int) string {
-	str := fmt.Sprintf("Most Charismatic\n(# of likes / # of messages)\n%s\n", messageDivider)
+	str := fmt.Sprintf("Most Charismatic\n(# of favorites received / # of messages they posted)\n%s\n", messageDivider)
 
 	mostCharismatic := s.MostCharismatic(limit)
 	for i, member := range mostCharismatic {
@@ -91,11 +91,11 @@ func (s *Stats) SprintMostCharismatic(limit int) string {
 
 // SprintTopLurker formats a Top Lurker Bot post and returns the resulting string.
 func (s *Stats) SprintTopLurker(limit int) string {
-	str := fmt.Sprintf("Top Lurker\n(# of likes given / # of messages)\n%s\n", messageDivider)
+	str := fmt.Sprintf("Top Lurker\n(# of favorites given out / # of messages they posted)\n%s\n", messageDivider)
 
 	topLurker := s.TopLurker(limit)
 	for i, member := range topLurker {
-		str += fmt.Sprintf("%d) %s: %.3f", i+1, member.Name, member.Lurky())
+		str += fmt.Sprintf("%d) %s: %.3f", i+1, member.Name, member.Lurkiness())
 
 		// don't put newline after last ranking
 		if i < len(topLurker)-1 {
@@ -108,7 +108,7 @@ func (s *Stats) SprintTopLurker(limit int) string {
 
 // SprintTopRambler formats a Top Rambler Bot post and returns the resulting string.
 func (s *Stats) SprintTopRambler(limit int) string {
-	str := fmt.Sprintf("Top Rambler\n(most messages with zero likes)\n%s\n", messageDivider)
+	str := fmt.Sprintf("Top Rambler\n(who posted the most messages with zero favorites)\n%s\n", messageDivider)
 
 	topRambler := s.TopRambler(limit)
 	for i, member := range topRambler {
@@ -116,6 +116,28 @@ func (s *Stats) SprintTopRambler(limit int) string {
 
 		// don't put newline after last ranking
 		if i < len(topRambler)-1 {
+			str += "\n"
+		}
+	}
+
+	return str
+}
+
+// SprintMostVisionary formats a Most Visionary Bot post and returns the resulting string.
+func (s *Stats) SprintMostVisionary(limit int) string {
+	str := fmt.Sprintf("Most Visionary\n(who posted the most images)\n%s\n", messageDivider)
+
+	mostVisionary := s.MostVisionary(limit)
+	for i, member := range mostVisionary {
+		if member.VisionaryScore > 0 {
+			str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.VisionaryScore)
+		} else {
+			str += "\nEveryone else posted 0 images."
+			break
+		}
+
+		// don't put newline after last ranking
+		if i < len(mostVisionary)-1 {
 			str += "\n"
 		}
 	}

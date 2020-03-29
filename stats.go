@@ -36,6 +36,7 @@ func NewStats(messages []*groupme.Message) Stats {
 // Analyze analyzes a GroupMe group's messages.
 func (s *Stats) Analyze() {
 	for _, message := range s.Messages {
+		// don't analyze blacklisted users
 		if s.Blacklisted(message.UserID) {
 			s.addMember(message.UserID, message.Name) // just in case
 			continue
@@ -73,6 +74,16 @@ func (s *Stats) Analyze() {
 			runes := []rune(text)
 			for _, r := range runes {
 				s.incCharacter(r)
+			}
+		}
+
+		// parse visionary
+		if len(message.Attachments) > 0 {
+			for _, attachment := range message.Attachments {
+				switch attachment.Type {
+				case groupme.ImageAttachment:
+					s.incVisionary(message.UserID, message.Name)
+				}
 			}
 		}
 	}

@@ -6,13 +6,16 @@ import (
 
 // Member is a container for a GroupMe member's staistics.
 type Member struct {
-	ID                string
-	Name              string
-	PopularityScore   int // how often did others upvote them
+	ID   string
+	Name string
+
+	PopularityScore   int // how often did others favorite their messages
 	UnpopularityScore int // how often did their messages get zero favorites
-	SimpScore         int // how many times did they upvote someone else
-	NarcissistScore   int // how many times did they upvote themselves
-	NumMessages       int // how many messages did they send
+	SimpScore         int // how many times did they favorite someone else
+	NarcissistScore   int // how many times did they favorite themselves
+	VisionaryScore    int // how many images did they send
+
+	NumMessages int // how many messages did they send
 }
 
 // Charisma returns the quality of their overall messages.
@@ -24,8 +27,8 @@ func (m *Member) Charisma() float64 {
 	return float64(m.PopularityScore) / float64(m.NumMessages)
 }
 
-// Lurky returns a ratio between their interactions with others' messages and how often they post messages themselves.
-func (m *Member) Lurky() float64 {
+// Lurkiness returns a ratio between their interactions with others' messages and how often they post messages themselves.
+func (m *Member) Lurkiness() float64 {
 	if m.SimpScore < 1 || m.NumMessages < 1 {
 		return -1
 	}
@@ -76,8 +79,14 @@ func (s *Stats) incNarcissist(userID, name string) {
 	s.Members[userID].NarcissistScore++
 }
 
+func (s *Stats) incVisionary(userID, name string) {
+	s.addMember(userID, name)
+
+	s.Members[userID].VisionaryScore++
+}
+
 // TopOfThePops returns a sorted list of the most popular members.
-// Popularity is defined as who has the most upvotes.
+// Popularity is defined as someone who has the most favorites.
 func (s *Stats) TopOfThePops(limit int) []*Member {
 	sorted := []*Member{}
 
@@ -96,7 +105,7 @@ func (s *Stats) TopOfThePops(limit int) []*Member {
 }
 
 // TopOfTheSimps returns a sorted list of the biggest simp members.
-// A simp is defined as who upvotes other members the most.
+// A simp is defined as someone who favorites other members' messages the most.
 func (s *Stats) TopOfTheSimps(limit int) []*Member {
 	sorted := []*Member{}
 
@@ -115,7 +124,7 @@ func (s *Stats) TopOfTheSimps(limit int) []*Member {
 }
 
 // TopOfTheNarcissists returns a sorted list of the biggest narcissistic members.
-// A narcissist is defined as who upvotes themselves the most.
+// A narcissist is defined as someone who favorites their own messages the most.
 func (s *Stats) TopOfTheNarcissists(limit int) []*Member {
 	sorted := []*Member{}
 
@@ -152,7 +161,7 @@ func (s *Stats) TopPosters(limit int) []*Member {
 }
 
 // MostCharismatic returns a sorted list of who posts the highest quality messages.
-// Charisma is defined as # of likes / # of messages.
+// Charisma is defined as (# of favorites received / # of messages they posted).
 func (s *Stats) MostCharismatic(limit int) []*Member {
 	sorted := []*Member{}
 
@@ -171,7 +180,7 @@ func (s *Stats) MostCharismatic(limit int) []*Member {
 }
 
 // TopLurker returns a sorted list of who lurks the most.
-// A lurker is defined as # of likes given out / # of messages posted.
+// A lurker is defined as (# of favorites given out / # of messages they posted).
 func (s *Stats) TopLurker(limit int) []*Member {
 	sorted := []*Member{}
 
@@ -179,7 +188,7 @@ func (s *Stats) TopLurker(limit int) []*Member {
 		sorted = append(sorted, member)
 	}
 
-	sort.Slice(sorted, func(i, j int) bool { return sorted[i].Lurky() > sorted[j].Lurky() })
+	sort.Slice(sorted, func(i, j int) bool { return sorted[i].Lurkiness() > sorted[j].Lurkiness() })
 
 	top := []*Member{}
 	for i := 0; i < limit && i < len(sorted); i++ {
@@ -198,6 +207,24 @@ func (s *Stats) TopRambler(limit int) []*Member {
 	}
 
 	sort.Slice(sorted, func(i, j int) bool { return sorted[i].UnpopularityScore > sorted[j].UnpopularityScore })
+
+	top := []*Member{}
+	for i := 0; i < limit && i < len(sorted); i++ {
+		top = append(top, sorted[i])
+	}
+
+	return top
+}
+
+// MostVisionary returns a sorted list of who posted the most images.
+func (s *Stats) MostVisionary(limit int) []*Member {
+	sorted := []*Member{}
+
+	for _, member := range s.Members {
+		sorted = append(sorted, member)
+	}
+
+	sort.Slice(sorted, func(i, j int) bool { return sorted[i].VisionaryScore > sorted[j].VisionaryScore })
 
 	top := []*Member{}
 	for i := 0; i < limit && i < len(sorted); i++ {
