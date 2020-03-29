@@ -9,6 +9,11 @@ func (s *Stats) SprintTopCharacters(limit int) string {
 	str := fmt.Sprintf("Top Characters\n%s\n", messageDivider)
 
 	topCharacters := s.TopCharacters(limit)
+	if len(topCharacters) == 0 {
+		str += "\nThere are no characters."
+		return str
+	}
+
 	for i, c := range topCharacters {
 		str += fmt.Sprintf("%d) %s: %d", i+1, string(c.R), c.Frequency)
 

@@ -1,6 +1,7 @@
 package groupmestatsbot
 
 import (
+	"math"
 	"sort"
 )
 
@@ -24,6 +25,10 @@ func (s *Stats) incWord(text string) {
 
 // TopWords returns a sorted list of the most frequently used words.
 func (s *Stats) TopWords(limit int) []*Word {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Word{}
 
 	for _, w := range s.WordFrequency {

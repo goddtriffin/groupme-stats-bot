@@ -9,7 +9,17 @@ func (s *Stats) SprintTopOfThePops(limit int) string {
 	str := fmt.Sprintf("Top of the Pops\n(who has the most favorites)\n%s\n", messageDivider)
 
 	topPopulars := s.TopOfThePops(limit)
+	if len(topPopulars) == 0 {
+		str += "\nThere are no members."
+		return str
+	}
+
 	for i, member := range topPopulars {
+		if member.PopularityScore == 0 {
+			str += "\nEveryone else is unpopular."
+			break
+		}
+
 		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.PopularityScore)
 
 		// don't put newline after last ranking
@@ -26,7 +36,17 @@ func (s *Stats) SprintTopOfTheSimps(limit int) string {
 	str := fmt.Sprintf("Top of the Simps\n(who favorited other people's messages the most)\n%s\n", messageDivider)
 
 	topSimps := s.TopOfTheSimps(limit)
+	if len(topSimps) == 0 {
+		str += "\nThere are no members."
+		return str
+	}
+
 	for i, member := range topSimps {
+		if member.SimpScore == 0 {
+			str += "\nEveryone else is not a simp."
+			break
+		}
+
 		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.SimpScore)
 
 		// don't put newline after last ranking
@@ -43,7 +63,17 @@ func (s *Stats) SprintTopOfTheNarcissists(limit int) string {
 	str := fmt.Sprintf("Top of the Narcissists\n(who favorited their own messages the most)\n%s\n", messageDivider)
 
 	topNarcissists := s.TopOfTheNarcissists(limit)
+	if len(topNarcissists) == 0 {
+		str += "\nThere are no members."
+		return str
+	}
+
 	for i, member := range topNarcissists {
+		if member.NarcissistScore == 0 {
+			str += "\nEveryone else is not a narcissist."
+			break
+		}
+
 		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.NarcissistScore)
 
 		// don't put newline after last ranking
@@ -60,7 +90,17 @@ func (s *Stats) SprintTopPoster(limit int) string {
 	str := fmt.Sprintf("Top Poster\n(who posted the most messages)\n%s\n", messageDivider)
 
 	topPosters := s.TopPosters(limit)
+	if len(topPosters) == 0 {
+		str += "\nThere are no members."
+		return str
+	}
+
 	for i, member := range topPosters {
+		if member.NumMessages == 0 {
+			str += "\nEveryone else posted 0 messages."
+			break
+		}
+
 		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.NumMessages)
 
 		// don't put newline after last ranking
@@ -77,7 +117,17 @@ func (s *Stats) SprintMostCharismatic(limit int) string {
 	str := fmt.Sprintf("Most Charismatic\n(# of favorites received / # of messages they posted)\n%s\n", messageDivider)
 
 	mostCharismatic := s.MostCharismatic(limit)
+	if len(mostCharismatic) == 0 {
+		str += "\nThere are no members."
+		return str
+	}
+
 	for i, member := range mostCharismatic {
+		if member.Charisma() == -1 {
+			str += "\nEveryone else has either received 0 favorites on their messages, or has posted 0 messages themselves."
+			break
+		}
+
 		str += fmt.Sprintf("%d) %s: %.3f", i+1, member.Name, member.Charisma())
 
 		// don't put newline after last ranking
@@ -94,7 +144,17 @@ func (s *Stats) SprintTopLurker(limit int) string {
 	str := fmt.Sprintf("Top Lurker\n(# of favorites given out / # of messages they posted)\n%s\n", messageDivider)
 
 	topLurker := s.TopLurker(limit)
+	if len(topLurker) == 0 {
+		str += "\nThere are no members."
+		return str
+	}
+
 	for i, member := range topLurker {
+		if member.Lurkiness() == -1 {
+			str += "\nEveryone else either hasn't given out any favorites, or has posted 0 messages themselves."
+			break
+		}
+
 		str += fmt.Sprintf("%d) %s: %.3f", i+1, member.Name, member.Lurkiness())
 
 		// don't put newline after last ranking
@@ -111,7 +171,17 @@ func (s *Stats) SprintTopRambler(limit int) string {
 	str := fmt.Sprintf("Top Rambler\n(who posted the most messages with zero favorites)\n%s\n", messageDivider)
 
 	topRambler := s.TopRambler(limit)
+	if len(topRambler) == 0 {
+		str += "\nThere are no members."
+		return str
+	}
+
 	for i, member := range topRambler {
+		if member.UnpopularityScore == 0 {
+			str += "\nEveryone else has favorites on all of their messages."
+			break
+		}
+
 		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.UnpopularityScore)
 
 		// don't put newline after last ranking
@@ -128,13 +198,18 @@ func (s *Stats) SprintMostVisionary(limit int) string {
 	str := fmt.Sprintf("Most Visionary\n(who posted the most images)\n%s\n", messageDivider)
 
 	mostVisionary := s.MostVisionary(limit)
+	if len(mostVisionary) == 0 {
+		str += "\nThere are no members."
+		return str
+	}
+
 	for i, member := range mostVisionary {
-		if member.VisionaryScore > 0 {
-			str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.VisionaryScore)
-		} else {
+		if member.VisionaryScore == 0 {
 			str += "\nEveryone else posted 0 images."
 			break
 		}
+
+		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.VisionaryScore)
 
 		// don't put newline after last ranking
 		if i < len(mostVisionary)-1 {

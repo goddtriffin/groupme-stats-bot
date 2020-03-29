@@ -1,6 +1,7 @@
 package groupmestatsbot
 
 import (
+	"math"
 	"sort"
 )
 
@@ -24,6 +25,10 @@ func (s *Stats) incCharacter(r rune) {
 
 // TopCharacters returns a sorted list of the most frequently used characters.
 func (s *Stats) TopCharacters(limit int) []*Character {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Character{}
 
 	for _, c := range s.CharacterFrequency {

@@ -1,6 +1,7 @@
 package groupmestatsbot
 
 import (
+	"math"
 	"sort"
 
 	"github.com/MagnusFrater/groupme"
@@ -81,26 +82,19 @@ func (s *Stats) incRepost(message *groupme.Message) {
 
 // TopReposts returns a sorted list of the most duplicated messages.
 func (s *Stats) TopReposts(limit int) []*Repost {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Repost{}
 	for _, repost := range s.Reposts {
 		sorted = append(sorted, repost)
 	}
 
-	sort.Slice(sorted, func(i, j int) bool {
-		if len(sorted[i].TopReposters(limit)) == 0 {
-			return false
-		}
-
-		return len(sorted[i].Messages) > len(sorted[j].Messages)
-	})
+	sort.Slice(sorted, func(i, j int) bool { return len(sorted[i].TopReposters(-1)) > len(sorted[j].TopReposters(-1)) })
 
 	top := []*Repost{}
 	for i := 0; i < limit && i < len(sorted); i++ {
-		// don't track messages with zero reposters
-		if len(sorted[i].TopReposters(limit)) == 0 {
-			continue
-		}
-
 		top = append(top, sorted[i])
 	}
 
@@ -109,6 +103,10 @@ func (s *Stats) TopReposts(limit int) []*Repost {
 
 // TopReposters returns a sorted list of who reposted this message the most.
 func (r *Repost) TopReposters(limit int) []*RepostAuthor {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*RepostAuthor{}
 	for userID, frequency := range r.AuthorFrequency {
 		// original author is not a reposter

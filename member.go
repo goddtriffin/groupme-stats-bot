@@ -1,6 +1,7 @@
 package groupmestatsbot
 
 import (
+	"math"
 	"sort"
 )
 
@@ -88,6 +89,10 @@ func (s *Stats) incVisionary(userID, name string) {
 // TopOfThePops returns a sorted list of the most popular members.
 // Popularity is defined as someone who has the most favorites.
 func (s *Stats) TopOfThePops(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {
@@ -107,6 +112,10 @@ func (s *Stats) TopOfThePops(limit int) []*Member {
 // TopOfTheSimps returns a sorted list of the biggest simp members.
 // A simp is defined as someone who favorites other members' messages the most.
 func (s *Stats) TopOfTheSimps(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {
@@ -126,6 +135,10 @@ func (s *Stats) TopOfTheSimps(limit int) []*Member {
 // TopOfTheNarcissists returns a sorted list of the biggest narcissistic members.
 // A narcissist is defined as someone who favorites their own messages the most.
 func (s *Stats) TopOfTheNarcissists(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {
@@ -144,6 +157,10 @@ func (s *Stats) TopOfTheNarcissists(limit int) []*Member {
 
 // TopPosters returns a sorted list of who posted the most messages.
 func (s *Stats) TopPosters(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {
@@ -163,6 +180,10 @@ func (s *Stats) TopPosters(limit int) []*Member {
 // MostCharismatic returns a sorted list of who posts the highest quality messages.
 // Charisma is defined as (# of favorites received / # of messages they posted).
 func (s *Stats) MostCharismatic(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {
@@ -182,6 +203,10 @@ func (s *Stats) MostCharismatic(limit int) []*Member {
 // TopLurker returns a sorted list of who lurks the most.
 // A lurker is defined as (# of favorites given out / # of messages they posted).
 func (s *Stats) TopLurker(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {
@@ -200,6 +225,10 @@ func (s *Stats) TopLurker(limit int) []*Member {
 
 // TopRambler returns a sorted list of who has the most messages with zero favorites.
 func (s *Stats) TopRambler(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {
@@ -218,6 +247,10 @@ func (s *Stats) TopRambler(limit int) []*Member {
 
 // MostVisionary returns a sorted list of who posted the most images.
 func (s *Stats) MostVisionary(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {

@@ -13,7 +13,12 @@ func (s *Stats) SprintTotalMessages() string {
 
 // SprintAverageMessageLength formats an Average Message Length Bot post and returns the resulting string.
 func (s *Stats) SprintAverageMessageLength() string {
-	return fmt.Sprintf("Average Message Length: %d words", s.AverageMessageLength())
+	averageMessageLength := s.AverageMessageLength()
+	if averageMessageLength == -1 {
+		averageMessageLength = 0
+	}
+
+	return fmt.Sprintf("Average Message Length: %d words", averageMessageLength)
 }
 
 // SprintTopMessages formats a Top Messages Bot post and returns the resulting string.
@@ -21,6 +26,11 @@ func (s *Stats) SprintTopMessages(limit int) string {
 	str := fmt.Sprintf("Top Messages\n%s\n", messageDivider)
 
 	topMessages := s.TopMessages(limit)
+	if len(topMessages) == 0 {
+		str += "\nThere are no messages."
+		return str
+	}
+
 	for i, message := range topMessages {
 		str += fmt.Sprintf("%d) (%d) %s:\n", i+1, len(message.FavoritedBy), message.Name)
 

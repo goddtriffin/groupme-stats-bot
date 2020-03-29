@@ -9,8 +9,18 @@ func (s *Stats) SprintTopReposts(limit int) string {
 	str := fmt.Sprintf("Top Reposts\n(most reposted messages)\n%s\n", messageDivider)
 
 	topReposts := s.TopReposts(limit)
+	if len(topReposts) == 0 {
+		str += "\nThere are no messages."
+		return str
+	}
+
 	for i, repost := range topReposts {
-		str += fmt.Sprintf("%d) %d reposts\n", i+1, len(repost.Messages))
+		if len(repost.Messages) == 1 {
+			str += "Every other message is original."
+			break
+		}
+
+		str += fmt.Sprintf("%d) %d reposts\n", i+1, len(repost.TopReposters(-1)))
 		str += fmt.Sprintf("OP: %s (%d)\n", s.Members[repost.OriginalAuthor].Name, repost.AuthorFrequency[repost.OriginalAuthor])
 
 		topRepostersStr := s.SprintTopReposters(limit, repost.Messages[0].Text)

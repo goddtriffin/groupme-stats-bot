@@ -1,6 +1,7 @@
 package groupmestatsbot
 
 import (
+	"math"
 	"sort"
 
 	"github.com/MagnusFrater/groupme"
@@ -13,11 +14,19 @@ func (s *Stats) TotalMessages() int {
 
 // AverageMessageLength returns the average message length.
 func (s *Stats) AverageMessageLength() int {
+	if s.TotalMessagesLength == 0 || len(s.Messages) == 0 {
+		return -1
+	}
+
 	return s.TotalMessagesLength / len(s.Messages)
 }
 
 // TopMessages returns a sorted list of the most favorited messages.
 func (s *Stats) TopMessages(limit int) []*groupme.Message {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := make([]*groupme.Message, len(s.Messages))
 	copy(sorted, s.Messages)
 
