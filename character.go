@@ -1,7 +1,7 @@
 package groupmestatsbot
 
 import (
-	"fmt"
+	"math"
 	"sort"
 )
 
@@ -25,6 +25,10 @@ func (s *Stats) incCharacter(r rune) {
 
 // TopCharacters returns a sorted list of the most frequently used characters.
 func (s *Stats) TopCharacters(limit int) []*Character {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Character{}
 
 	for _, c := range s.CharacterFrequency {
@@ -39,21 +43,4 @@ func (s *Stats) TopCharacters(limit int) []*Character {
 	}
 
 	return top
-}
-
-// SprintTopCharacters formats a Top Characters Bot post and returns the resulting string.
-func (s *Stats) SprintTopCharacters(limit int) string {
-	str := fmt.Sprintf("Top Characters\n%s\n", messageDivider)
-
-	topCharacters := s.TopCharacters(limit)
-	for i, c := range topCharacters {
-		str += fmt.Sprintf("%d) %s: %d", i+1, string(c.R), c.Frequency)
-
-		// don't put newline after last ranking
-		if i < len(topCharacters)-1 {
-			str += "\n"
-		}
-	}
-
-	return str
 }

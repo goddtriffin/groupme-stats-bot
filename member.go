@@ -1,19 +1,22 @@
 package groupmestatsbot
 
 import (
-	"fmt"
+	"math"
 	"sort"
 )
 
 // Member is a container for a GroupMe member's staistics.
 type Member struct {
-	ID                string
-	Name              string
-	PopularityScore   int // how often did others upvote them
+	ID   string
+	Name string
+
+	PopularityScore   int // how often did others favorite their messages
 	UnpopularityScore int // how often did their messages get zero favorites
-	SimpScore         int // how many times did they upvote someone else
-	NarcissistScore   int // how many times did they upvote themselves
-	NumMessages       int // how many messages did they send
+	SimpScore         int // how many times did they favorite someone else
+	NarcissistScore   int // how many times did they favorite themselves
+	VisionaryScore    int // how many images did they send
+
+	NumMessages int // how many messages did they send
 }
 
 // Charisma returns the quality of their overall messages.
@@ -25,8 +28,8 @@ func (m *Member) Charisma() float64 {
 	return float64(m.PopularityScore) / float64(m.NumMessages)
 }
 
-// Lurky returns a ratio between their interactions with others' messages and how often they post messages themselves.
-func (m *Member) Lurky() float64 {
+// Lurkiness returns a ratio between their interactions with others' messages and how often they post messages themselves.
+func (m *Member) Lurkiness() float64 {
 	if m.SimpScore < 1 || m.NumMessages < 1 {
 		return -1
 	}
@@ -77,9 +80,19 @@ func (s *Stats) incNarcissist(userID, name string) {
 	s.Members[userID].NarcissistScore++
 }
 
+func (s *Stats) incVisionary(userID, name string) {
+	s.addMember(userID, name)
+
+	s.Members[userID].VisionaryScore++
+}
+
 // TopOfThePops returns a sorted list of the most popular members.
-// Popularity is defined as who has the most upvotes.
+// Popularity is defined as someone who has the most favorites.
 func (s *Stats) TopOfThePops(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {
@@ -97,8 +110,12 @@ func (s *Stats) TopOfThePops(limit int) []*Member {
 }
 
 // TopOfTheSimps returns a sorted list of the biggest simp members.
-// A simp is defined as who upvotes other members the most.
+// A simp is defined as someone who favorites other members' messages the most.
 func (s *Stats) TopOfTheSimps(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {
@@ -116,8 +133,12 @@ func (s *Stats) TopOfTheSimps(limit int) []*Member {
 }
 
 // TopOfTheNarcissists returns a sorted list of the biggest narcissistic members.
-// A narcissist is defined as who upvotes themselves the most.
+// A narcissist is defined as someone who favorites their own messages the most.
 func (s *Stats) TopOfTheNarcissists(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {
@@ -136,6 +157,10 @@ func (s *Stats) TopOfTheNarcissists(limit int) []*Member {
 
 // TopPosters returns a sorted list of who posted the most messages.
 func (s *Stats) TopPosters(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {
@@ -153,8 +178,12 @@ func (s *Stats) TopPosters(limit int) []*Member {
 }
 
 // MostCharismatic returns a sorted list of who posts the highest quality messages.
-// Charisma is defined as # of likes / # of messages.
+// Charisma is defined as (# of favorites received / # of messages they posted).
 func (s *Stats) MostCharismatic(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {
@@ -172,15 +201,19 @@ func (s *Stats) MostCharismatic(limit int) []*Member {
 }
 
 // TopLurker returns a sorted list of who lurks the most.
-// A lurker is defined as # of likes given out / # of messages posted.
+// A lurker is defined as (# of favorites given out / # of messages they posted).
 func (s *Stats) TopLurker(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {
 		sorted = append(sorted, member)
 	}
 
-	sort.Slice(sorted, func(i, j int) bool { return sorted[i].Lurky() > sorted[j].Lurky() })
+	sort.Slice(sorted, func(i, j int) bool { return sorted[i].Lurkiness() > sorted[j].Lurkiness() })
 
 	top := []*Member{}
 	for i := 0; i < limit && i < len(sorted); i++ {
@@ -192,6 +225,10 @@ func (s *Stats) TopLurker(limit int) []*Member {
 
 // TopRambler returns a sorted list of who has the most messages with zero favorites.
 func (s *Stats) TopRambler(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Member{}
 
 	for _, member := range s.Members {
@@ -208,121 +245,24 @@ func (s *Stats) TopRambler(limit int) []*Member {
 	return top
 }
 
-// SprintTopOfThePops formats a Top of the Pops Bot post and returns the resulting string.
-func (s *Stats) SprintTopOfThePops(limit int) string {
-	str := fmt.Sprintf("Top of the Pops\n(who has the most upvotes)\n%s\n", messageDivider)
-
-	topPopulars := s.TopOfThePops(limit)
-	for i, member := range topPopulars {
-		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.PopularityScore)
-
-		// don't put newline after last ranking
-		if i < len(topPopulars)-1 {
-			str += "\n"
-		}
+// MostVisionary returns a sorted list of who posted the most images.
+func (s *Stats) MostVisionary(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
 	}
 
-	return str
-}
+	sorted := []*Member{}
 
-// SprintTopOfTheSimps formats a Top of the Simps Bot post and returns the resulting string.
-func (s *Stats) SprintTopOfTheSimps(limit int) string {
-	str := fmt.Sprintf("Top of the Simps\n(who upvoted other people the most)\n%s\n", messageDivider)
-
-	topSimps := s.TopOfTheSimps(limit)
-	for i, member := range topSimps {
-		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.SimpScore)
-
-		// don't put newline after last ranking
-		if i < len(topSimps)-1 {
-			str += "\n"
-		}
+	for _, member := range s.Members {
+		sorted = append(sorted, member)
 	}
 
-	return str
-}
+	sort.Slice(sorted, func(i, j int) bool { return sorted[i].VisionaryScore > sorted[j].VisionaryScore })
 
-// SprintTopOfTheNarcissists formats a Top of the Narcissists Bot post and returns the resulting string.
-func (s *Stats) SprintTopOfTheNarcissists(limit int) string {
-	str := fmt.Sprintf("Top of the Narcissists\n(who upvoted themselves the most)\n%s\n", messageDivider)
-
-	topNarcissists := s.TopOfTheNarcissists(limit)
-	for i, member := range topNarcissists {
-		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.NarcissistScore)
-
-		// don't put newline after last ranking
-		if i < len(topNarcissists)-1 {
-			str += "\n"
-		}
+	top := []*Member{}
+	for i := 0; i < limit && i < len(sorted); i++ {
+		top = append(top, sorted[i])
 	}
 
-	return str
-}
-
-// SprintTopPoster formats a Top Poster Bot post and returns the resulting string.
-func (s *Stats) SprintTopPoster(limit int) string {
-	str := fmt.Sprintf("Top Poster\n(who posted the most)\n%s\n", messageDivider)
-
-	topPosters := s.TopPosters(limit)
-	for i, member := range topPosters {
-		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.NumMessages)
-
-		// don't put newline after last ranking
-		if i < len(topPosters)-1 {
-			str += "\n"
-		}
-	}
-
-	return str
-}
-
-// SprintMostCharismatic formats a Most Charismatic Bot post and returns the resulting string.
-func (s *Stats) SprintMostCharismatic(limit int) string {
-	str := fmt.Sprintf("Most Charismatic\n(# of likes / # of messages)\n%s\n", messageDivider)
-
-	mostCharismatic := s.MostCharismatic(limit)
-	for i, member := range mostCharismatic {
-		str += fmt.Sprintf("%d) %s: %.3f", i+1, member.Name, member.Charisma())
-
-		// don't put newline after last ranking
-		if i < len(mostCharismatic)-1 {
-			str += "\n"
-		}
-	}
-
-	return str
-}
-
-// SprintTopLurker formats a Top Lurker Bot post and returns the resulting string.
-func (s *Stats) SprintTopLurker(limit int) string {
-	str := fmt.Sprintf("Top Lurker\n(# of likes given / # of messages)\n%s\n", messageDivider)
-
-	topLurker := s.TopLurker(limit)
-	for i, member := range topLurker {
-		str += fmt.Sprintf("%d) %s: %.3f", i+1, member.Name, member.Lurky())
-
-		// don't put newline after last ranking
-		if i < len(topLurker)-1 {
-			str += "\n"
-		}
-	}
-
-	return str
-}
-
-// SprintTopRambler formats a Top Rambler Bot post and returns the resulting string.
-func (s *Stats) SprintTopRambler(limit int) string {
-	str := fmt.Sprintf("Top Rambler\n(most messages with zero likes)\n%s\n", messageDivider)
-
-	topRambler := s.TopRambler(limit)
-	for i, member := range topRambler {
-		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, member.UnpopularityScore)
-
-		// don't put newline after last ranking
-		if i < len(topRambler)-1 {
-			str += "\n"
-		}
-	}
-
-	return str
+	return top
 }

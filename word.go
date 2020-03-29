@@ -1,7 +1,7 @@
 package groupmestatsbot
 
 import (
-	"fmt"
+	"math"
 	"sort"
 )
 
@@ -25,6 +25,10 @@ func (s *Stats) incWord(text string) {
 
 // TopWords returns a sorted list of the most frequently used words.
 func (s *Stats) TopWords(limit int) []*Word {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
 	sorted := []*Word{}
 
 	for _, w := range s.WordFrequency {
@@ -39,21 +43,4 @@ func (s *Stats) TopWords(limit int) []*Word {
 	}
 
 	return top
-}
-
-// SprintTopWords formats a Top Words Bot post and returns the resulting string.
-func (s *Stats) SprintTopWords(limit int) string {
-	str := fmt.Sprintf("Top Words\n%s\n", messageDivider)
-
-	topWords := s.TopWords(limit)
-	for i, w := range topWords {
-		str += fmt.Sprintf("%d) %s: %d", i+1, w.Text, w.Frequency)
-
-		// don't put newline after last ranking
-		if i < len(topWords)-1 {
-			str += "\n"
-		}
-	}
-
-	return str
 }
