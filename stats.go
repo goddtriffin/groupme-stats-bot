@@ -77,13 +77,17 @@ func (s *Stats) Analyze() {
 			}
 		}
 
+		// parse wordsmith
+		if len(message.Attachments) == 0 {
+			s.incWordsmith(message.UserID, message.Name)
+			continue
+		}
+
 		// parse visionary
-		if len(message.Attachments) > 0 {
-			for _, attachment := range message.Attachments {
-				switch attachment.Type {
-				case groupme.ImageAttachment:
-					s.incVisionary(message.UserID, message.Name)
-				}
+		for _, attachment := range message.Attachments {
+			switch attachment.Type {
+			case groupme.ImageAttachment:
+				s.incVisionary(message.UserID, message.Name)
 			}
 		}
 	}
