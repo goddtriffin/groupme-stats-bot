@@ -21,8 +21,8 @@ type Stats struct {
 }
 
 // NewStats creates a new Stats.
-func NewStats(messages []*groupme.Message) Stats {
-	return Stats{
+func NewStats(messages []*groupme.Message) *Stats {
+	return &Stats{
 		Messages:           messages,
 		Members:            make(map[string]*Member),
 		WordFrequency:      make(map[string]*Word),
