@@ -48,7 +48,10 @@ func (s *Stats) Analyze() {
 		// parse numMessage and popularity
 		s.incNumMessages(message.UserID, message.Name)
 
-		if len(message.FavoritedBy) > 0 {
+		if len(message.FavoritedBy) == 0 {
+			// parse unpopularity (rambler)
+			s.incUnpopularity(message.UserID, message.Name)
+		} else {
 			// parse narcissists and simps
 			for _, userID := range message.FavoritedBy {
 				if userID == message.UserID {
@@ -58,9 +61,6 @@ func (s *Stats) Analyze() {
 					s.incSimp(userID, "")
 				}
 			}
-		} else {
-			// unpopularity - their message received zero favorites
-			s.incUnpopularity(message.UserID, message.Name)
 		}
 
 		// parse message length
@@ -80,14 +80,25 @@ func (s *Stats) Analyze() {
 		// parse wordsmith
 		if len(message.Attachments) == 0 {
 			s.incWordsmith(message.UserID, message.Name)
-			continue
+		} else {
+			// parse visionary
+			for _, attachment := range message.Attachments {
+				switch attachment.Type {
+				case groupme.ImageAttachment:
+					s.incVisionary(message.UserID, message.Name)
+				}
+			}
 		}
 
-		// parse visionary
-		for _, attachment := range message.Attachments {
-			switch attachment.Type {
-			case groupme.ImageAttachment:
-				s.incVisionary(message.UserID, message.Name)
+		if message.Event.Exists() {
+			switch message.Event.Type {
+			case groupme.MemberAddedEventType:
+				// TODO
+			case groupme.MemberRemovedEventType:
+				// parse biggest foot, sorest bum
+				s.handleMemberRemovedEvent(message.Event)
+			case groupme.NicknameChangedEventType:
+				// TODO
 			}
 		}
 	}

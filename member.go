@@ -17,7 +17,20 @@ type Member struct {
 	VisionaryScore    int // how many images did they send
 	WordsmithScore    int // how many text-only messages did they send
 
+	Kicked   []*Member // members they've kicked from the group
+	KickedBy []*Member // members who kicked them from the group
+
 	NumMessages int // how many messages did they send
+}
+
+// NewMember creates a new Member.
+func NewMember(ID, name string) *Member {
+	return &Member{
+		ID:       ID,
+		Name:     name,
+		Kicked:   []*Member{},
+		KickedBy: []*Member{},
+	}
 }
 
 // Charisma returns the quality of their overall messages.
@@ -40,10 +53,7 @@ func (m *Member) Lurkiness() float64 {
 
 func (s *Stats) addMember(userID, name string) {
 	if m, ok := s.Members[userID]; !ok {
-		s.Members[userID] = &Member{
-			ID:   userID,
-			Name: name,
-		}
+		s.Members[userID] = NewMember(userID, name)
 	} else {
 		if m.Name == "" {
 			m.Name = name
@@ -91,6 +101,28 @@ func (s *Stats) incWordsmith(userID, name string) {
 	s.addMember(userID, name)
 
 	s.Members[userID].WordsmithScore++
+}
+
+// remover/removed are temporary empty shells; they are not true members stored in Stats
+func (s *Stats) addKicked(remover, removed *Member) {
+	s.addMember(remover.ID, remover.Name)
+	s.addMember(removed.ID, removed.Name)
+
+	remover = s.Members[remover.ID]
+	removed = s.Members[removed.ID]
+
+	remover.Kicked = append(remover.Kicked, removed)
+}
+
+// remover/removed are temporary empty shells; they are not true members stored in Stats
+func (s *Stats) addKickedBy(remover, removed *Member) {
+	s.addMember(remover.ID, remover.Name)
+	s.addMember(removed.ID, removed.Name)
+
+	remover = s.Members[remover.ID]
+	removed = s.Members[removed.ID]
+
+	removed.KickedBy = append(removed.KickedBy, remover)
 }
 
 // TopOfThePops returns a sorted list of the most popular members.
@@ -287,6 +319,28 @@ func (s *Stats) TopWordsmith(limit int) []*Member {
 	}
 
 	sort.Slice(sorted, func(i, j int) bool { return sorted[i].WordsmithScore > sorted[j].WordsmithScore })
+
+	top := []*Member{}
+	for i := 0; i < limit && i < len(sorted); i++ {
+		top = append(top, sorted[i])
+	}
+
+	return top
+}
+
+// BiggestFoot returns a sorted list of who kicked the most members from the group.
+func (s *Stats) BiggestFoot(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
+	sorted := []*Member{}
+
+	for _, member := range s.Members {
+		sorted = append(sorted, member)
+	}
+
+	sort.Slice(sorted, func(i, j int) bool { return len(sorted[i].Kicked) > len(sorted[j].Kicked) })
 
 	top := []*Member{}
 	for i := 0; i < limit && i < len(sorted); i++ {
