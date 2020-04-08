@@ -22,6 +22,7 @@ Analyze statistics about a GroupMe group.
 | Most Visionary         | who posts the most images                                                           |
 | Top Wordsmith          | who posts the most text-only messages                                               |
 | Biggest Foot           | who kicked the most members from the group                                          |
+| Sorest Bum             | who got kicked from the group the most                                              |
 
 ### Messages
 
