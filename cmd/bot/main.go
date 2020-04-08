@@ -19,6 +19,7 @@ func main() {
 
 	blacklist := flag.String("blacklist", "", "blacklist of comma-delimited User IDs")
 
+	// members
 	topOfThePops := flag.Bool("topOfThePops", false, "toggle for Top of the Pops")
 	topOfTheSimps := flag.Bool("topOfTheSimps", false, "toggle for Top of the Simps")
 	topOfTheNarcissists := flag.Bool("topOfTheNarcissists", false, "toggle for Top of the Narcissists")
@@ -28,6 +29,10 @@ func main() {
 	topRambler := flag.Bool("topRambler", false, "toggle for Top Rambler")
 	mostVisionary := flag.Bool("mostVisionary", false, "toggle for Most Visionary")
 	topWordsmith := flag.Bool("topWordsmith", false, "toggle for Top Wordsmith")
+	biggestFoot := flag.Bool("biggestFoot", false, "toggle for Biggest Foot")
+	sorestBum := flag.Bool("sorestBum", false, "toggle for Sorest Bum")
+
+	// messages
 	textFrequencyAnalysis := flag.Bool("textFrequencyAnalysis", false, "toggle for Text Frequency Analysis")
 	topMessages := flag.Bool("topMessages", false, "toggle for Top Messages")
 	topReposts := flag.Bool("topReposts", false, "toggle for Top Reposts")
@@ -41,11 +46,17 @@ func main() {
 
 	if !*topOfThePops && !*topOfTheSimps && !*topOfTheNarcissists && !*topPoster &&
 		!*mostCharismatic && !*topLurker && !*topRambler && !*mostVisionary &&
-		!*topWordsmith && !*textFrequencyAnalysis && !*topMessages && !*topReposts {
-		fmt.Print("Must toggle at least one of: ")
+		!*topWordsmith && !*biggestFoot && !*sorestBum && !*textFrequencyAnalysis &&
+		!*topMessages && !*topReposts {
+		fmt.Println("Must toggle at least one of: ")
+
+		fmt.Print("Members: ")
 		fmt.Print("topOfThePops, topOfTheSimps, topOfTheNarcissists, topPoster, ")
 		fmt.Print("mostCharismatic, topLurker, topRambler, mostVisionary, ")
-		fmt.Println("topWordsmith, textFrequencyAnalysis, topMessages, topReposts")
+		fmt.Println("topWordsmith, biggestFoot, sorestBum")
+
+		fmt.Print("Messages: ")
+		fmt.Println("textFrequencyAnalysis, topMessages, topReposts")
 		fmt.Println()
 
 		flag.Usage()
@@ -71,83 +82,87 @@ func main() {
 
 	stats.Analyze()
 
+	// MEMBERS
 	if *topOfThePops {
 		err = bot.Post(stats.SprintTopOfThePops(*limit), nil)
 		if err != nil {
 			log.Panic(err)
 		}
 	}
-
 	if *topOfTheSimps {
 		err = bot.Post(stats.SprintTopOfTheSimps(*limit), nil)
 		if err != nil {
 			log.Panic(err)
 		}
 	}
-
 	if *topOfTheNarcissists {
 		err = bot.Post(stats.SprintTopOfTheNarcissists(*limit), nil)
 		if err != nil {
 			log.Panic(err)
 		}
 	}
-
 	if *topPoster {
 		err = bot.Post(stats.SprintTopPoster(*limit), nil)
 		if err != nil {
 			log.Panic(err)
 		}
 	}
-
 	if *mostCharismatic {
 		err = bot.Post(stats.SprintMostCharismatic(*limit), nil)
 		if err != nil {
 			log.Panic(err)
 		}
 	}
-
 	if *topLurker {
 		err = bot.Post(stats.SprintTopLurker(*limit), nil)
 		if err != nil {
 			log.Panic(err)
 		}
 	}
-
 	if *topRambler {
 		err = bot.Post(stats.SprintTopRambler(*limit), nil)
 		if err != nil {
 			log.Panic(err)
 		}
 	}
-
 	if *mostVisionary {
 		err = bot.Post(stats.SprintMostVisionary(*limit), nil)
 		if err != nil {
 			log.Panic(err)
 		}
 	}
-
 	if *topWordsmith {
 		err = bot.Post(stats.SprintTopWordsmith(*limit), nil)
 		if err != nil {
 			log.Panic(err)
 		}
 	}
+	if *biggestFoot {
+		err = bot.Post(stats.SprintBiggestFoot(*limit), nil)
+		if err != nil {
+			log.Panic(err)
+		}
+	}
+	if *sorestBum {
+		err = bot.Post(stats.SprintSorestBum(*limit), nil)
+		if err != nil {
+			log.Panic(err)
+		}
+	}
 
+	// MESSAGES
 	if *textFrequencyAnalysis {
 		err = bot.Post(stats.SprintTextFrequencyAnalysis(*limit), nil)
 		if err != nil {
 			log.Panic(err)
 		}
 	}
-
 	if *topMessages {
 		err = bot.Post(stats.SprintTopMessages(*limit), nil)
 		if err != nil {
 			log.Panic(err)
 		}
 	}
-
 	if *topReposts {
 		err = bot.Post(stats.SprintTopReposts(*limit), nil)
 		if err != nil {

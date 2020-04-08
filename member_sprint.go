@@ -246,3 +246,57 @@ func (s *Stats) SprintTopWordsmith(limit int) string {
 
 	return str
 }
+
+// SprintBiggestFoot formats a Biggest Foot Bot post and returns the resulting string.
+func (s *Stats) SprintBiggestFoot(limit int) string {
+	str := fmt.Sprintf("Biggest Foot\n(who kicked the most members from the group)\n%s\n", messageDivider)
+
+	biggestFoot := s.BiggestFoot(limit)
+	if len(biggestFoot) == 0 {
+		str += "\nThere are no members."
+		return str
+	}
+
+	for i, member := range biggestFoot {
+		if len(member.Kicked) == 0 {
+			str += "\nEveryone else kicked 0 people."
+			break
+		}
+
+		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, len(member.Kicked))
+
+		// don't put newline after last ranking
+		if i < len(biggestFoot)-1 {
+			str += "\n"
+		}
+	}
+
+	return str
+}
+
+// SprintSorestBum formats a Sorest Bum Bot post and returns the resulting string.
+func (s *Stats) SprintSorestBum(limit int) string {
+	str := fmt.Sprintf("Sorest Bum\n(who got kicked from the group the most)\n%s\n", messageDivider)
+
+	sorestBum := s.SorestBum(limit)
+	if len(sorestBum) == 0 {
+		str += "\nThere are no members."
+		return str
+	}
+
+	for i, member := range sorestBum {
+		if len(member.KickedBy) == 0 {
+			str += "\nEveryone else was kicked 0 times."
+			break
+		}
+
+		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, len(member.KickedBy))
+
+		// don't put newline after last ranking
+		if i < len(sorestBum)-1 {
+			str += "\n"
+		}
+	}
+
+	return str
+}

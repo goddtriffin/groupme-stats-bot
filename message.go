@@ -3,9 +3,33 @@ package groupmestatsbot
 import (
 	"math"
 	"sort"
+	"strconv"
 
 	"github.com/MagnusFrater/groupme"
 )
+
+func (s *Stats) handleMemberRemovedEvent(event groupme.Event) {
+	if event.Type != groupme.MemberRemovedEventType {
+		return
+	}
+
+	var remover, removed *Member
+
+	for key, i := range event.Data {
+		userEventData, ok := groupme.ParseUserEventData(i)
+		if ok {
+			switch key {
+			case groupme.RemoverUserKey:
+				remover = NewMember(strconv.Itoa(userEventData.ID), userEventData.Nickname)
+			case groupme.RemovedUserKey:
+				removed = NewMember(strconv.Itoa(userEventData.ID), userEventData.Nickname)
+			}
+		}
+	}
+
+	s.addKicked(remover, removed)
+	s.addKickedBy(remover, removed)
+}
 
 // TotalMessages returns the total number of messages.
 func (s *Stats) TotalMessages() int {
