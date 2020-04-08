@@ -8,6 +8,12 @@ Analyze statistics about a GroupMe group.
 
 ## Features
 
+### All
+
+| Statistic | Description                  |
+| --------- | ---------------------------- |
+| All       | runs every available command |
+
 ### Members
 
 | Statistic              | Description                                                                         |
