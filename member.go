@@ -349,3 +349,25 @@ func (s *Stats) BiggestFoot(limit int) []*Member {
 
 	return top
 }
+
+// SorestBum returns a sorted list of who got kicked from the group the most.
+func (s *Stats) SorestBum(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
+	sorted := []*Member{}
+
+	for _, member := range s.Members {
+		sorted = append(sorted, member)
+	}
+
+	sort.Slice(sorted, func(i, j int) bool { return len(sorted[i].KickedBy) > len(sorted[j].KickedBy) })
+
+	top := []*Member{}
+	for i := 0; i < limit && i < len(sorted); i++ {
+		top = append(top, sorted[i])
+	}
+
+	return top
+}

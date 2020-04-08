@@ -30,6 +30,7 @@ func main() {
 	mostVisionary := flag.Bool("mostVisionary", false, "toggle for Most Visionary")
 	topWordsmith := flag.Bool("topWordsmith", false, "toggle for Top Wordsmith")
 	biggestFoot := flag.Bool("biggestFoot", false, "toggle for Biggest Foot")
+	sorestBum := flag.Bool("sorestBum", false, "toggle for Sorest Bum")
 
 	// messages
 	textFrequencyAnalysis := flag.Bool("textFrequencyAnalysis", false, "toggle for Text Frequency Analysis")
@@ -45,14 +46,14 @@ func main() {
 
 	if !*topOfThePops && !*topOfTheSimps && !*topOfTheNarcissists && !*topPoster &&
 		!*mostCharismatic && !*topLurker && !*topRambler && !*mostVisionary &&
-		!*topWordsmith && !*biggestFoot && !*textFrequencyAnalysis && !*topMessages &&
-		!*topReposts {
+		!*topWordsmith && !*biggestFoot && !*sorestBum && !*textFrequencyAnalysis &&
+		!*topMessages && !*topReposts {
 		fmt.Println("Must toggle at least one of: ")
 
 		fmt.Print("Members: ")
 		fmt.Print("topOfThePops, topOfTheSimps, topOfTheNarcissists, topPoster, ")
 		fmt.Print("mostCharismatic, topLurker, topRambler, mostVisionary, ")
-		fmt.Println("topWordsmith, biggestFoot")
+		fmt.Println("topWordsmith, biggestFoot, sorestBum")
 
 		fmt.Print("Messages: ")
 		fmt.Println("textFrequencyAnalysis, topMessages, topReposts")
@@ -138,6 +139,12 @@ func main() {
 	}
 	if *biggestFoot {
 		err = bot.Post(stats.SprintBiggestFoot(*limit), nil)
+		if err != nil {
+			log.Panic(err)
+		}
+	}
+	if *sorestBum {
+		err = bot.Post(stats.SprintSorestBum(*limit), nil)
 		if err != nil {
 			log.Panic(err)
 		}
