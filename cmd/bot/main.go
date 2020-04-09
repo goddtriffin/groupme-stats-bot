@@ -34,27 +34,43 @@ func main() {
 	// show usage if zero commands toggled
 	if len(commandList) == 0 {
 		flag.Usage()
-
-		str := "Commands must contain at least one of: "
-		availableCommands := groupmestatsbot.GetAllCommands()
-		for i, command := range availableCommands {
-			str += command
-
-			// don't put comma after last command
-			if i < len(availableCommands)-1 {
-				str += ", "
-			}
-		}
-		log.Println(str)
-
+		printAvailableCommands()
 		os.Exit(1)
 	}
 
 	// run commands
+	ranCommand := false
 	for _, command := range commandList {
-		_, err := statsBot.Command(command, *logOnly)
+		didRun, err := statsBot.Command(command, *logOnly)
 		if err != nil {
 			log.Panic(err)
 		}
+
+		if didRun == true {
+			ranCommand = didRun
+		}
 	}
+
+	// if no command was ran, they probably misspelled it
+	// or just straight up didn't call a real command
+	if !ranCommand {
+		flag.Usage()
+		log.Println("No valid command was toggled.")
+		printAvailableCommands()
+		os.Exit(1)
+	}
+}
+
+func printAvailableCommands() {
+	str := "Commands must contain at least one of: "
+	availableCommands := groupmestatsbot.GetAllCommands()
+	for i, command := range availableCommands {
+		str += command
+
+		// don't put comma after last command
+		if i < len(availableCommands)-1 {
+			str += ", "
+		}
+	}
+	log.Println(str)
 }
