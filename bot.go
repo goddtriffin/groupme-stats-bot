@@ -25,6 +25,7 @@ const (
 	CommandBiggestFoot         = "biggestFoot"
 	CommandSorestBum           = "sorestBum"
 	CommandTopMother           = "topMother"
+	CommandMostReincarnated    = "mostReincarnated"
 
 	// messages
 	CommandTextFrequencyAnalysis = "textFrequencyAnalysis"
@@ -112,14 +113,16 @@ func (b *StatsBot) Command(command string, logOnly bool) (bool, error) {
 		output = b.Stats.SprintBiggestFoot(b.Limit)
 	case CommandSorestBum:
 		output = b.Stats.SprintSorestBum(b.Limit)
+	case CommandTopMother:
+		output = b.Stats.SprintTopMother(b.Limit)
+	case CommandMostReincarnated:
+		output = b.Stats.SprintMostReincarnated(b.Limit)
 	case CommandTextFrequencyAnalysis:
 		output = b.Stats.SprintTextFrequencyAnalysis(b.Limit)
 	case CommandTopMessages:
 		output = b.Stats.SprintTopMessages(b.Limit)
 	case CommandTopReposts:
 		output = b.Stats.SprintTopReposts(b.Limit)
-	case CommandTopMother:
-		output = b.Stats.SprintTopMother(b.Limit)
 	}
 
 	// no command was ran
@@ -162,6 +165,7 @@ func GetAllCommands() []string {
 		CommandTopPoster, CommandMostCharismatic, CommandTopLurker,
 		CommandTopRambler, CommandMostVisionary, CommandTopWordsmith,
 		CommandBiggestFoot, CommandSorestBum, CommandTopMother,
+		CommandMostReincarnated,
 		// messages
 		CommandTextFrequencyAnalysis, CommandTopMessages, CommandTopReposts,
 	}

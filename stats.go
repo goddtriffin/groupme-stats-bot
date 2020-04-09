@@ -93,13 +93,11 @@ func (s *Stats) Analyze() {
 		if message.Event.Exists() {
 			switch message.Event.Type {
 			case groupme.MemberAddedEventType:
-				// parse TopMother, TopNewborn
+				// parse TopMother, MostReincarnated
 				s.handleMemberAddedEvent(message.Event)
 			case groupme.MemberRemovedEventType:
 				// parse BiggestFoot, SorestBum
 				s.handleMemberRemovedEvent(message.Event)
-			case groupme.NicknameChangedEventType:
-				// TODO
 			}
 		}
 	}

@@ -424,3 +424,25 @@ func (s *Stats) TopMother(limit int) []*Member {
 
 	return top
 }
+
+// MostReincarnated returns a sorted list of who got added to the group the most.
+func (s *Stats) MostReincarnated(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
+	sorted := []*Member{}
+
+	for _, member := range s.Members {
+		sorted = append(sorted, member)
+	}
+
+	sort.Slice(sorted, func(i, j int) bool { return len(sorted[i].AddedBy) > len(sorted[j].AddedBy) })
+
+	top := []*Member{}
+	for i := 0; i < limit && i < len(sorted); i++ {
+		top = append(top, sorted[i])
+	}
+
+	return top
+}
