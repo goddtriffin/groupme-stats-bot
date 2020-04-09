@@ -2,6 +2,7 @@ package groupmestatsbot
 
 import (
 	"errors"
+	"log"
 
 	"github.com/MagnusFrater/groupme"
 )
@@ -9,25 +10,26 @@ import (
 // Commands
 const (
 	// all
-	All = "all"
+	CommandAll = "all"
 
 	// members
-	TopOfThePops        = "topOfThePops"
-	TopOfTheSimps       = "topOfTheSimps"
-	TopOfTheNarcissists = "topOfTheNarcissists"
-	TopPoster           = "topPoster"
-	MostCharismatic     = "mostCharismatic"
-	TopLurker           = "topLurker"
-	TopRambler          = "topRambler"
-	MostVisionary       = "mostVisionary"
-	TopWordsmith        = "topWordsmith"
-	BiggestFoot         = "biggestFoot"
-	SorestBum           = "sorestBum"
+	CommandTopOfThePops        = "topOfThePops"
+	CommandTopOfTheSimps       = "topOfTheSimps"
+	CommandTopOfTheNarcissists = "topOfTheNarcissists"
+	CommandTopPoster           = "topPoster"
+	CommandMostCharismatic     = "mostCharismatic"
+	CommandTopLurker           = "topLurker"
+	CommandTopRambler          = "topRambler"
+	CommandMostVisionary       = "mostVisionary"
+	CommandTopWordsmith        = "topWordsmith"
+	CommandBiggestFoot         = "biggestFoot"
+	CommandSorestBum           = "sorestBum"
+	CommandTopMother           = "topMother"
 
 	// messages
-	TextFrequencyAnalysis = "textFrequencyAnalysis"
-	TopMessages           = "topMessages"
-	TopReposts            = "topReposts"
+	CommandTextFrequencyAnalysis = "textFrequencyAnalysis"
+	CommandTopMessages           = "topMessages"
+	CommandTopReposts            = "topReposts"
 )
 
 // StatsBot is the GroupMe Stats Bot.
@@ -79,60 +81,71 @@ func New(accessToken, botID, groupID string, limit int, blacklist []string) (Sta
 	return statsBot, nil
 }
 
-// Command runs a GroupMe Stats Bot command.
-func (b *StatsBot) Command(command string) (bool, error) {
+// Command runs a GroupMe Stats Bot command
+// The returned bool represents whether or not a command was ran.
+func (b *StatsBot) Command(command string, logOnly bool) (bool, error) {
 	var err error
-	triedCommand := true
+	var output string
 
 	switch command {
-	case All:
-		err = b.AllCommands()
-	case TopOfThePops:
-		err = b.Bot.Post(b.Stats.SprintTopOfThePops(b.Limit), nil)
-	case TopOfTheSimps:
-		err = b.Bot.Post(b.Stats.SprintTopOfTheSimps(b.Limit), nil)
-	case TopOfTheNarcissists:
-		err = b.Bot.Post(b.Stats.SprintTopOfTheNarcissists(b.Limit), nil)
-	case TopPoster:
-		err = b.Bot.Post(b.Stats.SprintTopPoster(b.Limit), nil)
-	case MostCharismatic:
-		err = b.Bot.Post(b.Stats.SprintMostCharismatic(b.Limit), nil)
-	case TopLurker:
-		err = b.Bot.Post(b.Stats.SprintTopLurker(b.Limit), nil)
-	case TopRambler:
-		err = b.Bot.Post(b.Stats.SprintTopRambler(b.Limit), nil)
-	case MostVisionary:
-		err = b.Bot.Post(b.Stats.SprintMostVisionary(b.Limit), nil)
-	case TopWordsmith:
-		err = b.Bot.Post(b.Stats.SprintTopWordsmith(b.Limit), nil)
-	case BiggestFoot:
-		err = b.Bot.Post(b.Stats.SprintBiggestFoot(b.Limit), nil)
-	case SorestBum:
-		err = b.Bot.Post(b.Stats.SprintSorestBum(b.Limit), nil)
-	case TextFrequencyAnalysis:
-		err = b.Bot.Post(b.Stats.SprintTextFrequencyAnalysis(b.Limit), nil)
-	case TopMessages:
-		err = b.Bot.Post(b.Stats.SprintTopMessages(b.Limit), nil)
-	case TopReposts:
-		err = b.Bot.Post(b.Stats.SprintTopReposts(b.Limit), nil)
-	default:
-		triedCommand = false
+	case CommandAll:
+		err = b.AllCommands(logOnly)
+	case CommandTopOfThePops:
+		output = b.Stats.SprintTopOfThePops(b.Limit)
+	case CommandTopOfTheSimps:
+		output = b.Stats.SprintTopOfTheSimps(b.Limit)
+	case CommandTopOfTheNarcissists:
+		output = b.Stats.SprintTopOfTheNarcissists(b.Limit)
+	case CommandTopPoster:
+		output = b.Stats.SprintTopPoster(b.Limit)
+	case CommandMostCharismatic:
+		output = b.Stats.SprintMostCharismatic(b.Limit)
+	case CommandTopLurker:
+		output = b.Stats.SprintTopLurker(b.Limit)
+	case CommandTopRambler:
+		output = b.Stats.SprintTopRambler(b.Limit)
+	case CommandMostVisionary:
+		output = b.Stats.SprintMostVisionary(b.Limit)
+	case CommandTopWordsmith:
+		output = b.Stats.SprintTopWordsmith(b.Limit)
+	case CommandBiggestFoot:
+		output = b.Stats.SprintBiggestFoot(b.Limit)
+	case CommandSorestBum:
+		output = b.Stats.SprintSorestBum(b.Limit)
+	case CommandTextFrequencyAnalysis:
+		output = b.Stats.SprintTextFrequencyAnalysis(b.Limit)
+	case CommandTopMessages:
+		output = b.Stats.SprintTopMessages(b.Limit)
+	case CommandTopReposts:
+		output = b.Stats.SprintTopReposts(b.Limit)
+	case CommandTopMother:
+		output = b.Stats.SprintTopMother(b.Limit)
 	}
 
-	if err != nil {
-		return triedCommand, err
+	// no command was ran
+	if command != CommandAll && output == "" {
+		return false, nil
 	}
 
-	return triedCommand, nil
+	if logOnly {
+		log.Printf("\n%s\n", output)
+	} else {
+		err = b.Bot.Post(output, nil)
+		if err != nil {
+			return true, err
+		}
+	}
+
+	return true, nil
 }
 
 // AllCommands runs every single GroupMe Stats Bot command.
-func (b *StatsBot) AllCommands() error {
+func (b *StatsBot) AllCommands(logOnly bool) error {
 	commands := GetAllCommands()
 
 	var err error
 	for _, command := range commands {
-		_, err = b.Command(command)
+		_, err = b.Command(command, logOnly)
 		if err != nil {
 			return err
 		}
@@ -145,11 +158,11 @@ func (b *StatsBot) AllCommands() error {
 func GetAllCommands() []string {
 	return []string{
 		// members
-		TopOfThePops, TopOfTheSimps, TopOfTheNarcissists,
-		TopPoster, MostCharismatic, TopLurker,
-		TopRambler, MostVisionary, TopWordsmith,
-		BiggestFoot, SorestBum,
+		CommandTopOfThePops, CommandTopOfTheSimps, CommandTopOfTheNarcissists,
+		CommandTopPoster, CommandMostCharismatic, CommandTopLurker,
+		CommandTopRambler, CommandMostVisionary, CommandTopWordsmith,
+		CommandBiggestFoot, CommandSorestBum, CommandTopMother,
 		// messages
-		TextFrequencyAnalysis, TopMessages, TopReposts,
+		CommandTextFrequencyAnalysis, CommandTopMessages, CommandTopReposts,
 	}
 }

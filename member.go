@@ -20,6 +20,9 @@ type Member struct {
 	Kicked   []*Member // members they've kicked from the group
 	KickedBy []*Member // members who kicked them from the group
 
+	Added   []*Member // members they've added to the group
+	AddedBy []*Member // members who added them to the group
+
 	NumMessages int // how many messages did they send
 }
 
@@ -30,6 +33,8 @@ func NewMember(ID, name string) *Member {
 		Name:     name,
 		Kicked:   []*Member{},
 		KickedBy: []*Member{},
+		Added:    []*Member{},
+		AddedBy:  []*Member{},
 	}
 }
 
@@ -103,26 +108,52 @@ func (s *Stats) incWordsmith(userID, name string) {
 	s.Members[userID].WordsmithScore++
 }
 
-// remover/removed are temporary empty shells; they are not true members stored in Stats
+// remover/removed are temporary empty shells; they are not the true members stored in Stats.Members
 func (s *Stats) addKicked(remover, removed *Member) {
 	s.addMember(remover.ID, remover.Name)
-	s.addMember(removed.ID, removed.Name)
-
 	remover = s.Members[remover.ID]
+
+	s.addMember(removed.ID, removed.Name)
 	removed = s.Members[removed.ID]
 
 	remover.Kicked = append(remover.Kicked, removed)
 }
 
-// remover/removed are temporary empty shells; they are not true members stored in Stats
+// remover/removed are temporary empty shells; they are not the true members stored in Stats.Members
 func (s *Stats) addKickedBy(remover, removed *Member) {
 	s.addMember(remover.ID, remover.Name)
-	s.addMember(removed.ID, removed.Name)
-
 	remover = s.Members[remover.ID]
+
+	s.addMember(removed.ID, removed.Name)
 	removed = s.Members[removed.ID]
 
 	removed.KickedBy = append(removed.KickedBy, remover)
+}
+
+// adder/added are temporary empty shells; they are not the true members stored in Stats.Members
+func (s *Stats) addAdded(adder *Member, addedUsers []*Member) {
+	s.addMember(adder.ID, adder.Name)
+	adder = s.Members[adder.ID]
+
+	for _, member := range addedUsers {
+		s.addMember(member.ID, member.Name)
+		added := s.Members[member.ID]
+
+		adder.Added = append(adder.Added, added)
+	}
+}
+
+// adder/added are temporary empty shells; they are not the true members stored in Stats.Members
+func (s *Stats) addAddedBy(adder *Member, addedUsers []*Member) {
+	s.addMember(adder.ID, adder.Name)
+	adder = s.Members[adder.ID]
+
+	for _, member := range addedUsers {
+		s.addMember(member.ID, member.Name)
+		added := s.Members[member.ID]
+
+		added.AddedBy = append(added.AddedBy, adder)
+	}
 }
 
 // TopOfThePops returns a sorted list of the most popular members.
@@ -363,6 +394,28 @@ func (s *Stats) SorestBum(limit int) []*Member {
 	}
 
 	sort.Slice(sorted, func(i, j int) bool { return len(sorted[i].KickedBy) > len(sorted[j].KickedBy) })
+
+	top := []*Member{}
+	for i := 0; i < limit && i < len(sorted); i++ {
+		top = append(top, sorted[i])
+	}
+
+	return top
+}
+
+// TopMother returns a sorted list of who birthed (added) the most members into the world (group).
+func (s *Stats) TopMother(limit int) []*Member {
+	if limit == -1 {
+		limit = math.MaxInt64
+	}
+
+	sorted := []*Member{}
+
+	for _, member := range s.Members {
+		sorted = append(sorted, member)
+	}
+
+	sort.Slice(sorted, func(i, j int) bool { return len(sorted[i].Added) > len(sorted[j].Added) })
 
 	top := []*Member{}
 	for i := 0; i < limit && i < len(sorted); i++ {
