@@ -29,6 +29,8 @@ Analyze statistics about a GroupMe group.
 | Top Wordsmith          | who posts the most text-only messages                                               |
 | Biggest Foot           | who kicked the most members from the group                                          |
 | Sorest Bum             | who got kicked from the group the most                                              |
+| Top Mother             | (who birthed (added) the most members into the world (group))                       |
+| Most Reincarnated      | who got added to the group the most                                                 |
 
 ### Messages
 
