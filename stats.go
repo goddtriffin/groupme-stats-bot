@@ -42,17 +42,17 @@ func (s *Stats) Analyze() {
 			continue
 		}
 
-		// parse reposts
+		// parse TopReposts
 		s.incRepost(message)
 
-		// parse numMessage and popularity
+		// parse numMessage and topOfThePops
 		s.incNumMessages(message.UserID, message.Name)
 
 		if len(message.FavoritedBy) == 0 {
-			// parse unpopularity (rambler)
+			// parse TopRambler
 			s.incUnpopularity(message.UserID, message.Name)
 		} else {
-			// parse narcissists and simps
+			// parse TopOfTheNarcissists and TopOfTheSimps
 			for _, userID := range message.FavoritedBy {
 				if userID == message.UserID {
 					s.incNarcissist(message.UserID, message.Name)
@@ -63,25 +63,25 @@ func (s *Stats) Analyze() {
 			}
 		}
 
-		// parse message length
+		// parse MessageLength
 		s.TotalMessagesLength += len(message.Text)
 
-		// parse word frequency
+		// parse WordFrequency
 		for _, text := range strings.Fields(message.Text) {
 			s.incWord(text)
 
-			// parse character frequency
+			// parse CharacterFrequency
 			runes := []rune(text)
 			for _, r := range runes {
 				s.incCharacter(r)
 			}
 		}
 
-		// parse wordsmith
+		// parse TopWordsmith
 		if len(message.Attachments) == 0 {
 			s.incWordsmith(message.UserID, message.Name)
 		} else {
-			// parse visionary
+			// parse MostVisionary
 			for _, attachment := range message.Attachments {
 				switch attachment.Type {
 				case groupme.ImageAttachment:
@@ -93,12 +93,11 @@ func (s *Stats) Analyze() {
 		if message.Event.Exists() {
 			switch message.Event.Type {
 			case groupme.MemberAddedEventType:
-				// TODO
+				// parse TopMother, MostReincarnated
+				s.handleMemberAddedEvent(message.Event)
 			case groupme.MemberRemovedEventType:
-				// parse biggest foot, sorest bum
+				// parse BiggestFoot, SorestBum
 				s.handleMemberRemovedEvent(message.Event)
-			case groupme.NicknameChangedEventType:
-				// TODO
 			}
 		}
 	}

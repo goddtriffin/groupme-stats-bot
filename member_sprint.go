@@ -259,7 +259,7 @@ func (s *Stats) SprintBiggestFoot(limit int) string {
 
 	for i, member := range biggestFoot {
 		if len(member.Kicked) == 0 {
-			str += "\nEveryone else kicked 0 people."
+			str += "\nEveryone else kicked 0 members."
 			break
 		}
 
@@ -294,6 +294,60 @@ func (s *Stats) SprintSorestBum(limit int) string {
 
 		// don't put newline after last ranking
 		if i < len(sorestBum)-1 {
+			str += "\n"
+		}
+	}
+
+	return str
+}
+
+// SprintTopMother formats a Top Mother Bot post and returns the resulting string.
+func (s *Stats) SprintTopMother(limit int) string {
+	str := fmt.Sprintf("Top Mother\n(who birthed (added) the most members into the world (group))\n%s\n", messageDivider)
+
+	topMother := s.TopMother(limit)
+	if len(topMother) == 0 {
+		str += "\nThere are no members."
+		return str
+	}
+
+	for i, member := range topMother {
+		if len(member.Added) == 0 {
+			str += "\nEveryone else added 0 members."
+			break
+		}
+
+		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, len(member.Added))
+
+		// don't put newline after last ranking
+		if i < len(topMother)-1 {
+			str += "\n"
+		}
+	}
+
+	return str
+}
+
+// SprintMostReincarnated formats a Most Reincarnated Bot post and returns the resulting string.
+func (s *Stats) SprintMostReincarnated(limit int) string {
+	str := fmt.Sprintf("Most Reincarnated\n(who got added to the group the most)\n%s\n", messageDivider)
+
+	mostReincarnated := s.MostReincarnated(limit)
+	if len(mostReincarnated) == 0 {
+		str += "\nThere are no members."
+		return str
+	}
+
+	for i, member := range mostReincarnated {
+		if len(member.AddedBy) == 0 {
+			str += "\nEveryone else has been added 0 times."
+			break
+		}
+
+		str += fmt.Sprintf("%d) %s: %d", i+1, member.Name, len(member.AddedBy))
+
+		// don't put newline after last ranking
+		if i < len(mostReincarnated)-1 {
 			str += "\n"
 		}
 	}
